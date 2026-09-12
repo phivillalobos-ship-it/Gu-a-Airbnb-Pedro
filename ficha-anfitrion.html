@@ -1,0 +1,752 @@
+<title>Ficha de Anfitrión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Sacramento&family=Outfit:wght@400;500;700&family=Spectral:wght@400;600;700&family=Caveat:wght@400;500;600;700&family=Karla:wght@400;500;700&family=Marcellus&family=Mrs+Saint+Delafield&family=Yeseva+One&family=Yellowtail&family=Be+Vietnam+Pro:wght@400;500;700&family=Bricolage+Grotesque:wght@400;600;700&family=Unbounded:wght@400;600;700&family=Ms+Madi&family=Familjen+Grotesk:wght@400;500;700&family=Shadows+Into+Light&family=Hanken+Grotesk:wght@400;500;600&family=Archivo+Black&family=Permanent+Marker&family=Barlow:wght@400;500;700&family=Prata&family=Petit+Formal+Script&family=Cabin:wght@400;500;700&family=Zilla+Slab:wght@400;500;700&family=Chivo:wght@400;600&family=Bevan&family=Archivo+Narrow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3EFE6; --surface:#FBF9F3; --surface-2:#EAE2CE; --surface-3:#E1D6B8;
+  --border:rgba(36,30,20,.14); --border-strong:rgba(36,30,20,.24);
+  --text:#23201A; --text-70:rgba(35,32,26,.68); --text-45:rgba(35,32,26,.45);
+  --accent:#A8631F; --accent-ink:#fff; --accent-soft:rgba(168,99,31,.12);
+  --good:#4F7A52; --good-soft:rgba(79,122,82,.14);
+  --danger:#B33F32; --danger-soft:rgba(179,63,50,.12);
+  --display:'Archivo',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1712; --surface:#241F18; --surface-2:#2D271D; --surface-3:#38301F;
+    --border:rgba(244,238,222,.14); --border-strong:rgba(244,238,222,.24);
+    --text:#F2ECDD; --text-70:rgba(242,236,221,.72); --text-45:rgba(242,236,221,.46);
+    --accent:#E3A65B; --accent-ink:#2A1B08; --accent-soft:rgba(227,166,91,.16);
+    --good:#7FAE7E; --good-soft:rgba(127,174,126,.16);
+    --danger:#D97B6C; --danger-soft:rgba(217,123,108,.16);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1712; --surface:#241F18; --surface-2:#2D271D; --surface-3:#38301F;
+  --border:rgba(244,238,222,.14); --border-strong:rgba(244,238,222,.24);
+  --text:#F2ECDD; --text-70:rgba(242,236,221,.72); --text-45:rgba(242,236,221,.46);
+  --accent:#E3A65B; --accent-ink:#2A1B08; --accent-soft:rgba(227,166,91,.16);
+  --good:#7FAE7E; --good-soft:rgba(127,174,126,.16);
+  --danger:#D97B6C; --danger-soft:rgba(217,123,108,.16);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--body);margin:0;line-height:1.5}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+
+.shell{max-width:1180px;margin:0 auto;padding:28px 20px 80px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:32px}
+@media (max-width:880px){.shell{grid-template-columns:1fr}}
+
+/* header */
+.top{grid-column:1/-1;display:flex;flex-direction:column;gap:14px;padding-bottom:22px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.top__eyebrow{color:var(--accent);font-family:var(--mono)}
+.top h1{font-size:30px;font-weight:800;letter-spacing:-.01em}
+.top p{margin:0;color:var(--text-70);max-width:64ch;font-size:14.5px}
+.top__note{display:flex;gap:10px;align-items:flex-start;background:var(--danger-soft);border:1px solid rgba(179,63,50,.28);border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--text);max-width:64ch}
+.top__note b{color:var(--danger)}
+
+/* nav rail */
+.rail{position:sticky;top:20px;align-self:start;display:flex;flex-direction:column;gap:2px;height:fit-content}
+@media (max-width:880px){.rail{position:static;flex-direction:row;flex-wrap:wrap;gap:8px;margin-bottom:8px}}
+.rail a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;border-radius:8px;text-decoration:none;color:var(--text-70);font-size:13.5px;font-weight:500}
+.rail a:hover{background:var(--surface-2)}
+.rail__chip{font-family:var(--mono);font-size:10.5px;padding:1px 6px;border-radius:20px;background:var(--surface-3);color:var(--text-45)}
+.rail__chip.done{background:var(--good-soft);color:var(--good)}
+.rail__progress{margin-top:10px;padding-top:12px;border-top:1px solid var(--border)}
+.rail__progress .bar{height:6px;border-radius:20px;background:var(--surface-3);overflow:hidden;margin-top:6px}
+.rail__progress .bar>i{display:block;height:100%;background:var(--accent);border-radius:20px;transition:width .25s}
+.rail__progress span{font-family:var(--mono);font-size:11px;color:var(--text-45)}
+
+/* main */
+main{display:flex;flex-direction:column;gap:18px;min-width:0}
+section.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;scroll-margin-top:20px}
+section.card>header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px}
+section.card h2{font-size:18px;font-weight:700}
+section.card .lead{color:var(--text-70);font-size:13.5px;margin:2px 0 16px}
+.section-count{font-family:var(--mono);font-size:11px;color:var(--text-45)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 14px}
+@media (max-width:600px){.grid2,.grid3{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.span2{grid-column:1/-1}
+label{font-size:12px;font-weight:600;color:var(--text-70)}
+label .opt{font-weight:400;color:var(--text-45);text-transform:none}
+input[type=text],input[type=url],textarea,select{
+  font:inherit;font-size:13.5px;padding:9px 10px;border-radius:8px;border:1px solid var(--border-strong);
+  background:var(--surface-2);color:var(--text);width:100%
+}
+textarea{resize:vertical;min-height:64px;font-family:var(--body)}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.checks{display:flex;flex-wrap:wrap;gap:8px 16px}
+.chk{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-70)}
+.chk input{width:15px;height:15px;accent-color:var(--accent)}
+.note{background:var(--surface-2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12.5px;color:var(--text-70);margin-top:4px}
+
+/* repeatable items */
+.reps{display:flex;flex-direction:column;gap:12px}
+.rep-item{border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;background:var(--surface-2)}
+.rep-item__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.rep-item__head .tag{color:var(--accent)}
+.rep-del{background:none;border:none;color:var(--text-45);cursor:pointer;font-size:16px;line-height:1;padding:2px 6px;border-radius:6px}
+.rep-del:hover{background:var(--danger-soft);color:var(--danger)}
+.add-btn{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border:1px dashed var(--accent);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body)}
+.add-btn:hover{background:var(--accent);color:var(--accent-ink)}
+
+/* theme picker */
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:8px}
+.theme-card{position:relative;display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:12px;padding:13px 14px 14px;cursor:pointer;background:var(--surface-2);transition:border-color .15s}
+.theme-card:hover{border-color:var(--border-strong)}
+.theme-card:has(input:checked){border-color:var(--accent);background:var(--surface)}
+.theme-card:has(input:checked)::after{content:"✓";position:absolute;top:9px;right:11px;width:18px;height:18px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.theme-card input{position:absolute;opacity:0;pointer-events:none}
+.theme-card__swatches{display:flex;gap:4px}
+.theme-card__swatches i{width:16px;height:16px;border-radius:5px;display:block;border:1px solid rgba(0,0,0,.08)}
+.theme-card__name{font-size:16px;line-height:1.1}
+.theme-card__mood{font-size:11.5px;color:var(--text-45);line-height:1.35}
+.theme-card__sign{font-size:19px;line-height:1;margin-top:2px}
+.theme-card.custom{align-items:flex-start;justify-content:center;min-height:104px;background:transparent;border-style:dashed}
+.theme-card.custom .theme-card__name{font-family:var(--body)!important;font-size:13.5px;font-weight:600;color:var(--text-70)}
+
+/* footer bar */
+.footer-bar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);margin:24px -24px -80px;padding:16px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-radius:0 0 14px 14px}
+.btn{font-family:var(--body);font-weight:600;font-size:13.5px;padding:10px 18px;border-radius:8px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.06)}
+.footer-bar span{font-size:12.5px;color:var(--text-45);font-family:var(--mono)}
+#summaryBox{width:100%;margin-top:14px}
+#summaryOut{width:100%;min-height:220px;font-family:var(--mono);font-size:12px;white-space:pre-wrap;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:14px;color:var(--text-70)}
+[hidden]{display:none!important}
+</style>
+
+<div class="shell">
+  <div class="top">
+    <span class="top__eyebrow tag">Guía del huésped · ficha de datos</span>
+    <h1>Todo lo que necesito de cada anfitrión</h1>
+    <p>Completa esto por cada nuevo anfitrión/edificio antes de armar su guía. Al final, copia el resumen y pégalo en el chat — con eso arranco directo, sin ir y viniendo por datos sueltos.</p>
+    <div class="top__note"><span>⚠️</span><span><b>No escribas aquí ninguna clave de cerradura ni código de acceso.</b> Ese dato se envía siempre por Airbnb o WhatsApp directo al huésped, nunca queda en un archivo ni en el sitio publicado.</span></div>
+  </div>
+
+  <nav class="rail" id="rail">
+    <a href="#host">Anfitrión <span class="rail__chip" data-chip="host">0/6</span></a>
+    <a href="#brand">Branding y ubicación <span class="rail__chip" data-chip="brand">0/7</span></a>
+    <a href="#langdesign">Idiomas y diseño <span class="rail__chip" data-chip="langdesign">0/5</span></a>
+    <a href="#apartments">Departamentos <span class="rail__chip" data-chip="apartments">0</span></a>
+    <a href="#checkinout">Check-in / Check-out <span class="rail__chip" data-chip="checkinout">0/3</span></a>
+    <a href="#building">Edificio / condominio <span class="rail__chip" data-chip="building">0/4</span></a>
+    <a href="#area">Zona y recomendaciones <span class="rail__chip" data-chip="area">0</span></a>
+    <a href="#safety">Emergencias y salud <span class="rail__chip" data-chip="safety">0/4</span></a>
+    <a href="#map">Mapa <span class="rail__chip" data-chip="map">0/3</span></a>
+    <a href="#photos">Fotos pendientes <span class="rail__chip" data-chip="photos">0/3</span></a>
+    <div class="rail__progress">
+      <span id="progressLabel">0% completo</span>
+      <div class="bar"><i id="progressBar" style="width:0%"></i></div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HOST -->
+    <section class="card" id="host">
+      <header><h2>1 · Anfitrión</h2><span class="section-count" data-count="host"></span></header>
+      <p class="lead">Aparece una vez en la guía, en la portada y en "Contacto".</p>
+      <div class="grid2">
+        <div class="field"><label>Nombre</label><input type="text" data-f="host_nombre" placeholder="ej: María José"></div>
+        <div class="field"><label>WhatsApp <span class="opt">(con código de país)</span></label><input type="text" data-f="host_whatsapp" placeholder="ej: 56912345678"></div>
+        <div class="field span2"><label>Bio corta <span class="opt">(2–4 párrafos, tono personal — para portada/contacto)</span></label><textarea data-f="host_bio" placeholder="Quién eres, hace cuánto recibes huéspedes, qué te importa que sepan..."></textarea></div>
+        <div class="field span2"><label>Frase de cierre / firma</label><input type="text" data-f="host_firma_frase" placeholder="ej: ¡Que tengas una gran estadía!"></div>
+        <div class="field"><label>Estilo de portada</label>
+          <select data-f="host_estilo_portada">
+            <option value="">— elegir —</option>
+            <option>Postal: avatar + firma cursiva (como el actual)</option>
+            <option>Logo del alojamiento</option>
+            <option>Foto sin firma</option>
+            <option>Otro (detallar en notas)</option>
+          </select>
+        </div>
+        <div class="field"><label>Foto / avatar / logo</label><input type="text" data-f="host_foto_nota" placeholder="Se envía aparte como archivo — anota aquí formato/nombre"></div>
+      </div>
+    </section>
+
+    <!-- BRAND -->
+    <section class="card" id="brand">
+      <header><h2>2 · Branding y ubicación</h2><span class="section-count" data-count="brand"></span></header>
+      <p class="lead">Define el nombre que aparece en la portada y los datos de la ciudad/región.</p>
+      <div class="grid2">
+        <div class="field"><label>Nombre del edificio/condominio/casa <span class="opt">(branding de portada)</span></label><input type="text" data-f="brand_nombre" placeholder="ej: Distrito Verde"></div>
+        <div class="field"><label>Ciudad</label><input type="text" data-f="brand_ciudad" placeholder="ej: La Serena"></div>
+        <div class="field"><label>Región / kicker secundario</label><input type="text" data-f="brand_region" placeholder="ej: y Coquimbo · Cuarta Región"></div>
+        <div class="field"><label>País</label><input type="text" data-f="brand_pais" placeholder="ej: Chile"></div>
+        <div class="field span2"><label>Dirección completa <span class="opt">(para registro/portería)</span></label><input type="text" data-f="brand_direccion" placeholder="Calle, número, condominio, comuna"></div>
+        <div class="field span2"><label>Link de Google Maps de la ubicación</label><input type="url" data-f="brand_maps_link" placeholder="https://maps.app.goo.gl/..."></div>
+        <div class="field span2"><label>Coordenadas <span class="opt">(lat, long — para el clima en vivo. Si no las tienes, con la dirección las saco yo)</span></label><input type="text" data-f="brand_coordenadas" placeholder="ej: -29.9027, -71.2519"></div>
+      </div>
+    </section>
+
+    <!-- LANG + DESIGN -->
+    <section class="card" id="langdesign">
+      <header><h2>3 · Idiomas y diseño</h2><span class="section-count" data-count="langdesign"></span></header>
+      <p class="lead">Cada idioma implica traducir <em>todo</em> el contenido de todas las secciones. Si el tiempo es limitado, mejor 2 idiomas bien traducidos que 6 a medias.</p>
+      <div class="field"><label>Idiomas de la guía</label>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-f="lang_es" checked disabled> Español (base)</label>
+          <label class="chk"><input type="checkbox" data-f="lang_en"> English</label>
+          <label class="chk"><input type="checkbox" data-f="lang_pt"> Português</label>
+          <label class="chk"><input type="checkbox" data-f="lang_fr"> Français</label>
+          <label class="chk"><input type="checkbox" data-f="lang_zh"> 中文</label>
+          <label class="chk"><input type="checkbox" data-f="lang_ja"> 日本語</label>
+        </div>
+      </div>
+      <div class="field" style="margin-top:16px">
+        <label>Tema visual <span class="opt">(elige el que más se acerque al alojamiento — se puede afinar después)</span></label>
+        <div class="theme-grid" id="themeGrid"></div>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="field span2"><label>Ajustes sobre el tema elegido <span class="opt">(opcional — cambiar algún color puntual, etc.)</span></label><input type="text" data-f="design_colores" placeholder="ej: preferiría el acento en verde en vez de cobre"></div>
+        <div class="field span2"><label>Tipografía</label>
+          <select data-f="design_tipografia">
+            <option value="">— usar la del tema elegido —</option>
+            <option>Cambiar tipografía (detallar abajo)</option>
+          </select>
+        </div>
+        <div class="field span2"><label>Referencias visuales <span class="opt">(opcional — link a Pinterest, fotos de estilo, otra guía que le gustó)</span></label><input type="text" data-f="design_referencias" placeholder="Link o descripción"></div>
+      </div>
+    </section>
+
+    <!-- APARTMENTS -->
+    <section class="card" id="apartments">
+      <header><h2>4 · Departamentos</h2><span class="section-count" data-count="apartments"></span></header>
+      <p class="lead">Repite este bloque por cada depto/unidad que administre este anfitrión.</p>
+      <div class="reps" id="apartmentsList"></div>
+      <button class="add-btn" data-add="apartments" style="margin-top:12px">+ Añadir departamento</button>
+    </section>
+
+    <!-- CHECK-IN/OUT -->
+    <section class="card" id="checkinout">
+      <header><h2>5 · Check-in / Check-out</h2><span class="section-count" data-count="checkinout"></span></header>
+      <p class="lead">Los pasos de llegada específicos (portería → piso → puerta) van en cada depto, arriba. Acá va lo que es igual para todos los deptos de este anfitrión.</p>
+      <div class="grid2">
+        <div class="field span2"><label>Cómo se envía el código de acceso</label><input type="text" data-f="checkin_metodo_envio" placeholder="ej: por Airbnb o WhatsApp, 1-2 días antes de la llegada"></div>
+        <div class="field span2"><label>Qué hacer si llega antes o necesita salir más tarde</label><textarea data-f="checkin_llegada_tarde" placeholder="ej: avisar con antelación, se evalúa según la limpieza programada"></textarea></div>
+        <div class="field span2"><label>Pasos de salida / checkout</label><textarea data-f="checkout_pasos" placeholder="ej: sacar la basura a los lugares designados, cerrar ventanas, apagar luces y A/C, cerrar la puerta, avisar por WhatsApp que ya salió"></textarea></div>
+      </div>
+    </section>
+
+    <!-- BUILDING -->
+    <section class="card" id="building">
+      <header><h2>6 · Edificio / condominio</h2><span class="section-count" data-count="building"></span></header>
+      <p class="lead">Espacios compartidos entre todos los deptos de este anfitrión, si aplica.</p>
+      <div class="field" style="margin-bottom:12px"><label>Tipo</label>
+        <select data-f="building_tipo">
+          <option value="">— elegir —</option>
+          <option>Condominio / edificio con áreas comunes</option>
+          <option>Casa independiente, sin áreas comunes</option>
+        </select>
+      </div>
+      <div class="field"><label>Amenities disponibles</label>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-f="am_piscina"> Piscina</label>
+          <label class="chk"><input type="checkbox" data-f="am_quincho"> Quincho / BBQ</label>
+          <label class="chk"><input type="checkbox" data-f="am_lavanderia"> Lavandería</label>
+          <label class="chk"><input type="checkbox" data-f="am_gimnasio"> Gimnasio</label>
+          <label class="chk"><input type="checkbox" data-f="am_porteria"> Portería 24/7</label>
+          <label class="chk"><input type="checkbox" data-f="am_estac_visitas"> Estacionamiento visitas</label>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:12px">
+        <div class="field"><label>Lavandería — marca / sistema de pago</label><input type="text" data-f="building_lavanderia_detalle" placeholder="ej: PayMatic, con tarjeta recargable"></div>
+        <div class="field"><label>Otros amenities <span class="opt">(no listados arriba)</span></label><input type="text" data-f="building_amenities_otros" placeholder="ej: cancha multicanchas, sala de eventos"></div>
+        <div class="field span2"><label>Horarios de uso / restricciones de amenities</label><textarea data-f="building_horarios" placeholder="ej: piscina 10:00–20:00 en temporada alta, quinchos con reserva en portería..."></textarea></div>
+      </div>
+    </section>
+
+    <!-- AREA -->
+    <section class="card" id="area">
+      <header><h2>7 · Zona y recomendaciones</h2><span class="section-count" data-count="area"></span></header>
+      <p class="lead">Lo que va en "Dónde comer y qué visitar" — tu mapa personal de la zona.</p>
+      <h3 style="font-family:var(--body);font-size:13px;font-weight:600;color:var(--text-70);margin:4px 0 10px">Zonas destacadas <span style="font-weight:400;color:var(--text-45)">(mínimo 3, una línea cada una)</span></h3>
+      <div class="reps" id="zonasList"></div>
+      <button class="add-btn" data-add="zonas" style="margin:10px 0 20px">+ Añadir zona destacada</button>
+
+      <h3 style="font-family:var(--body);font-size:13px;font-weight:600;color:var(--text-70);margin:4px 0 10px">Restaurantes / lugares para comer</h3>
+      <div class="reps" id="restosList"></div>
+      <button class="add-btn" data-add="restos" style="margin-top:10px">+ Añadir restaurante</button>
+    </section>
+
+    <!-- SAFETY -->
+    <section class="card" id="safety">
+      <header><h2>8 · Emergencias y salud</h2><span class="section-count" data-count="safety"></span></header>
+      <p class="lead">Números reales de la zona y los riesgos naturales que de verdad aplican ahí — no copiar los de otra ciudad.</p>
+      <div class="grid3">
+        <div class="field"><label>Ambulancia</label><input type="text" data-f="emerg_ambulancia" placeholder="ej: 131"></div>
+        <div class="field"><label>Bomberos</label><input type="text" data-f="emerg_bomberos" placeholder="ej: 132"></div>
+        <div class="field"><label>Policía</label><input type="text" data-f="emerg_policia" placeholder="ej: 133"></div>
+        <div class="field span2"><label>Otro número relevante <span class="opt">(autoridad marítima, forestal, etc.)</span></label><input type="text" data-f="emerg_otro" placeholder="ej: 137 Autoridad Marítima"></div>
+      </div>
+      <div class="field" style="margin-top:14px"><label>Riesgos naturales que aplican en esta zona</label>
+        <div class="checks">
+          <label class="chk"><input type="checkbox" data-f="riesgo_sismo"> Sismo</label>
+          <label class="chk"><input type="checkbox" data-f="riesgo_tsunami"> Tsunami</label>
+          <label class="chk"><input type="checkbox" data-f="riesgo_incendio_forestal"> Incendio forestal</label>
+          <label class="chk"><input type="checkbox" data-f="riesgo_huracan"> Huracán / tormenta tropical</label>
+          <label class="chk"><input type="checkbox" data-f="riesgo_nieve"> Nieve / hielo</label>
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px"><label>Instrucciones específicas <span class="opt">(si algún riesgo necesita pasos distintos a los genéricos)</span></label><textarea data-f="riesgo_notas"></textarea></div>
+      <h3 style="font-family:var(--body);font-size:13px;font-weight:600;color:var(--text-70);margin:18px 0 10px">Centros de salud cercanos</h3>
+      <div class="reps" id="saludList"></div>
+      <button class="add-btn" data-add="salud" style="margin-top:10px">+ Añadir centro de salud</button>
+    </section>
+
+    <!-- MAP -->
+    <section class="card" id="map">
+      <header><h2>9 · Mapa</h2><span class="section-count" data-count="map"></span></header>
+      <div class="grid2">
+        <div class="field span2"><label>Link de Google My Maps <span class="opt">(con pines de tus recomendaciones)</span></label><input type="url" data-f="map_mymaps" placeholder="https://www.google.com/maps/d/embed?mid=..."></div>
+        <div class="field"><label>¿Efecto de trazado de costa/ciudad en la portada?</label>
+          <select data-f="map_efecto">
+            <option value="">— elegir —</option>
+            <option>Sí, quiero ese efecto</option>
+            <option>No, portada simple</option>
+          </select>
+        </div>
+        <div class="field"><label>Ubicación aproximada <span class="opt">(si dijiste que sí — para sacar la geometría real)</span></label><input type="text" data-f="map_ubicacion" placeholder="ej: coordenadas o nombre de la bahía/comuna"></div>
+      </div>
+      <div class="note">Si no tienes un Google My Maps creado, avísame y te paso el paso a paso — toma 10 minutos.</div>
+    </section>
+
+    <!-- PHOTOS -->
+    <section class="card" id="photos">
+      <header><h2>10 · Fotos pendientes</h2><span class="section-count" data-count="photos"></span></header>
+      <p class="lead">Súbelas aparte (Airbnb, Drive, WhatsApp), no las pegues aquí. Las fotos de interior, cerradura y basura de cada depto se marcan arriba, en la sección 4.</p>
+      <div class="checks" style="flex-direction:column;align-items:flex-start;gap:10px">
+        <label class="chk"><input type="checkbox" data-f="foto_fachada"> Fachada del edificio / entrada</label>
+        <label class="chk"><input type="checkbox" data-f="foto_comunes"> Áreas comunes que apliquen (piscina, quincho, lavandería, portería)</label>
+        <label class="chk"><input type="checkbox" data-f="foto_anfitrion"> Foto o avatar del anfitrión para la portada</label>
+      </div>
+    </section>
+
+    <div class="footer-bar">
+      <button class="btn primary" id="copyBtn">Copiar resumen</button>
+      <button class="btn" id="resetBtn">Vaciar ficha</button>
+      <span id="saveState">Guardado automático en este navegador</span>
+      <div id="summaryBox" hidden>
+        <label style="font-size:12px;font-weight:600;color:var(--text-70)">Resumen — pégalo en el chat</label>
+        <textarea id="summaryOut" readonly></textarea>
+      </div>
+    </div>
+  </main>
+</div>
+
+<template id="tpl-apartments">
+<div class="rep-item" data-item="apartments">
+  <div class="rep-item__head"><span class="tag">DEPTO</span><button class="rep-del" data-del="1" title="Eliminar">×</button></div>
+  <div class="grid3">
+    <div class="field"><label>Nombre</label><input type="text" data-f="nombre" placeholder="ej: Depto 138"></div>
+    <div class="field"><label>Piso</label><input type="text" data-f="piso" placeholder="ej: 1"></div>
+    <div class="field"><label>N° estacionamiento</label><input type="text" data-f="estacionamiento" placeholder="ej: 249, o «no aplica»"></div>
+    <div class="field"><label>Capacidad máxima <span class="opt">(huéspedes)</span></label><input type="text" data-f="capacidad" placeholder="ej: 2 personas"></div>
+    <div class="field"><label>Habitaciones</label><input type="text" data-f="habitaciones" placeholder="ej: 1"></div>
+    <div class="field"><label>Camas</label><input type="text" data-f="camas" placeholder="ej: 1 de 2 plazas"></div>
+    <div class="field"><label>Baños</label><input type="text" data-f="banos" placeholder="ej: 1"></div>
+    <div class="field"><label>WiFi — red</label><input type="text" data-f="wifi_red" placeholder="ej: GTDDPTO138"></div>
+    <div class="field"><label>WiFi — clave</label><input type="text" data-f="wifi_clave" placeholder="clave de la red (no la de acceso)"></div>
+    <div class="field"><label>Método de acceso</label>
+      <select data-f="acceso_metodo">
+        <option value="">— elegir —</option>
+        <option>Cerradura digital</option>
+        <option>Llave con portería</option>
+        <option>Caja de seguridad</option>
+        <option>Otro</option>
+      </select>
+    </div>
+    <div class="field"><label>Check-in</label><input type="text" data-f="checkin" placeholder="ej: desde 14:00"></div>
+    <div class="field"><label>Check-out</label><input type="text" data-f="checkout" placeholder="ej: hasta 10:00"></div>
+    <div class="field"><label>Link de Airbnb</label><input type="url" data-f="airbnb_link" placeholder="https://www.airbnb.../rooms/..."></div>
+    <div class="field"><label>Rating</label><input type="text" data-f="rating" placeholder="ej: 4,99"></div>
+    <div class="field"><label>N° de reseñas</label><input type="text" data-f="resenas" placeholder="ej: 175"></div>
+  </div>
+  <div class="checks" style="margin-top:12px">
+    <label class="chk"><input type="checkbox" data-f="normas_fumar"> Se permite fumar</label>
+    <label class="chk"><input type="checkbox" data-f="normas_mascotas"> Se permiten mascotas</label>
+    <label class="chk"><input type="checkbox" data-f="normas_fiestas"> Se permiten fiestas/eventos</label>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="field"><label>Visitas — horario permitido</label><input type="text" data-f="normas_visitas" placeholder="ej: 10:00–02:00, avisar con antelación"></div>
+    <div class="field"><label>Sanciones por incumplimiento</label><input type="text" data-f="normas_sanciones" placeholder="ej: cargo de limpieza adicional"></div>
+    <div class="field span2"><label>Equipamiento distinto al estándar <span class="opt">(solo diferencias — el set base es: ropa de cama, toallas, secador, cocina equipada, papel higiénico, shampoo)</span></label><textarea data-f="equipamiento_notas"></textarea></div>
+    <div class="field span2"><label>Pasos para llegar <span class="opt">(portería → estacionamiento → torre/piso → puerta, en orden)</span></label><textarea data-f="pasos_llegada" placeholder="ej: Entra por portería (24/7) → Estaciona en el sitio N°249 → Busca la Torre 8, frente a los quinchos → Sube al piso 1 → Abre con la cerradura digital"></textarea></div>
+  </div>
+  <div class="field" style="margin-top:12px"><label>Fotos de este depto</label>
+    <div class="checks">
+      <label class="chk"><input type="checkbox" data-f="foto_interior"> Interior / living (para portada)</label>
+      <label class="chk"><input type="checkbox" data-f="foto_cerradura"> Cerradura / método de acceso</label>
+      <label class="chk"><input type="checkbox" data-f="foto_ducto_basura"> Ducto de basura</label>
+      <label class="chk"><input type="checkbox" data-f="foto_puerta_residuos"> Puerta de residuos / reciclaje</label>
+    </div>
+  </div>
+</div>
+</template>
+
+<template id="tpl-zonas">
+<div class="rep-item" data-item="zonas">
+  <div class="rep-item__head"><span class="tag">ZONA</span><button class="rep-del" data-del="1">×</button></div>
+  <div class="grid2">
+    <div class="field"><label>Nombre</label><input type="text" data-f="nombre" placeholder="ej: Avenida del Mar"></div>
+    <div class="field"><label>Una línea descriptiva</label><input type="text" data-f="linea" placeholder="ej: 4 km de costanera para caminar o andar en bici"></div>
+  </div>
+</div>
+</template>
+
+<template id="tpl-restos">
+<div class="rep-item" data-item="restos">
+  <div class="rep-item__head"><span class="tag">LUGAR</span><button class="rep-del" data-del="1">×</button></div>
+  <div class="grid3">
+    <div class="field"><label>Nombre</label><input type="text" data-f="nombre" placeholder="ej: La Escalera"></div>
+    <div class="field"><label>Categoría</label><input type="text" data-f="categoria" placeholder="ej: italiana, mariscos, café, pizza"></div>
+    <div class="field"><label>Distancia</label><input type="text" data-f="distancia" placeholder="ej: 1,0 km"></div>
+    <div class="field span2"><label>Dirección</label><input type="text" data-f="direccion" placeholder="Calle y número"></div>
+    <div class="field"><label class="chk" style="margin-top:20px"><input type="checkbox" data-f="top"> Es "mi elección" en su categoría</label></div>
+    <div class="field span2"><label>Blurb corto</label><input type="text" data-f="blurb" placeholder="1–2 líneas: qué lo hace bueno"></div>
+  </div>
+</div>
+</template>
+
+<template id="tpl-salud">
+<div class="rep-item" data-item="salud">
+  <div class="rep-item__head"><span class="tag">SALUD</span><button class="rep-del" data-del="1">×</button></div>
+  <div class="grid2">
+    <div class="field"><label>Nombre</label><input type="text" data-f="nombre" placeholder="ej: Hospital de La Serena"></div>
+    <div class="field"><label>Tipo</label>
+      <select data-f="tipo"><option value="">— elegir —</option><option>Público</option><option>Privado</option><option>Farmacia</option></select>
+    </div>
+    <div class="field"><label>Dirección</label><input type="text" data-f="direccion"></div>
+    <div class="field"><label>Horario</label><input type="text" data-f="horario" placeholder="ej: 24 h"></div>
+    <div class="field"><label>Teléfono</label><input type="text" data-f="telefono" placeholder="ej: +56 51 2xxxxxx"></div>
+  </div>
+</div>
+</template>
+
+<script>
+const STORE_KEY = "ficha-anfitrion-v1";
+
+const THEMES = [
+  {id:"playa-tropical", name:"Playa tropical", mood:"Costa caribeña, cálida y luminosa",
+    palette:{bg_deep:"#062F3E",bg_mid:"#0D4757",surface:"#FFF6E9",surface_2:"#F7E3C6",accent:"#FF6B4A",accent_2:"#21C1D6",alert:"#C41E4E",ink:"#14313A"},
+    fonts:{display:"Fraunces",hand:"Sacramento",sans:"Outfit"}},
+  {id:"bosque-nordico", name:"Bosque nórdico", mood:"Cabañas de montaña, bosque frío o lago",
+    palette:{bg_deep:"#16242B",bg_mid:"#24373E",surface:"#F2EFE8",surface_2:"#DDD6C7",accent:"#A8613E",accent_2:"#7EA8AE",alert:"#B23A48",ink:"#23302F"},
+    fonts:{display:"Spectral",hand:"Caveat",sans:"Karla"}},
+  {id:"costa-mediterranea", name:"Costa mediterránea", mood:"Casas encaladas, azul intenso y piedra",
+    palette:{bg_deep:"#0E3C7A",bg_mid:"#17529E",surface:"#FCFAF5",surface_2:"#EAE2D2",accent:"#E7B53A",accent_2:"#2E86C8",alert:"#D6342B",ink:"#17253C"},
+    fonts:{display:"Marcellus",hand:"Mrs Saint Delafield",sans:"Archivo"}},
+  {id:"selva-exuberante", name:"Selva exuberante", mood:"Lodges rodeados de selva densa",
+    palette:{bg_deep:"#08211A",bg_mid:"#12392A",surface:"#F5F3E4",surface_2:"#E2E5CE",accent:"#D94F87",accent_2:"#2E6FD9",alert:"#E2402C",ink:"#16291F"},
+    fonts:{display:"Yeseva One",hand:"Yellowtail",sans:"Be Vietnam Pro"}},
+  {id:"loft-urbano", name:"Loft urbano moderno", mood:"Depto de diseño en ciudad grande",
+    palette:{bg_deep:"#2B2A28",bg_mid:"#3C3A36",surface:"#F0EEE9",surface_2:"#DFDBD2",accent:"#D9A521",accent_2:"#2C6E6B",alert:"#D1443B",ink:"#262523"},
+    fonts:{display:"Bricolage Grotesque",hand:"Caveat",sans:"Karla"}},
+  {id:"ciudad-nocturna", name:"Ciudad nocturna", mood:"Zona de vida nocturna y entretenimiento",
+    palette:{bg_deep:"#15112B",bg_mid:"#221C3F",surface:"#F3EFF6",surface_2:"#E2DBEC",accent:"#FFB627",accent_2:"#35D0EA",alert:"#FF3B5C",ink:"#1E1A2E"},
+    fonts:{display:"Unbounded",hand:"Ms Madi",sans:"Archivo"}},
+  {id:"minimalista-escandinavo", name:"Minimalista escandinavo", mood:"Nórdico, madera clara y sereno",
+    palette:{bg_deep:"#313A3A",bg_mid:"#4A5555",surface:"#FBFAF7",surface_2:"#EDE7DD",accent:"#6F93A6",accent_2:"#C99A5B",alert:"#BE3A34",ink:"#262B2B"},
+    fonts:{display:"Familjen Grotesk",hand:"Shadows Into Light",sans:"Hanken Grotesk"}},
+  {id:"industrial-ladrillo", name:"Industrial de ladrillo", mood:"Loft antiguo, ladrillo visto y acero",
+    palette:{bg_deep:"#241A16",bg_mid:"#3A2823",surface:"#E6E2DB",surface_2:"#D2C8BC",accent:"#B55A32",accent_2:"#4F8A8B",alert:"#F0B429",ink:"#2A211D"},
+    fonts:{display:"Archivo Black",hand:"Permanent Marker",sans:"Barlow"}},
+  {id:"casona-colonial", name:"Casona colonial", mood:"Adobe patrimonial, patios y muros encalados",
+    palette:{bg_deep:"#2F211D",bg_mid:"#4A342B",surface:"#F1EBDF",surface_2:"#E0D5C2",accent:"#B5872F",accent_2:"#2D6E9E",alert:"#A3242B",ink:"#26201B"},
+    fonts:{display:"Prata",hand:"Petit Formal Script",sans:"Karla"}},
+  {id:"vinedo-rural", name:"Viñedo y campo", mood:"Casa de campo entre parronales y huertos",
+    palette:{bg_deep:"#1F2E22",bg_mid:"#3A4A31",surface:"#E9EDE2",surface_2:"#D8DFCC",accent:"#7A2E4E",accent_2:"#C98A16",alert:"#BF3B26",ink:"#2B2E26"},
+    fonts:{display:"Fraunces",hand:"Mrs Saint Delafield",sans:"Cabin"}},
+  {id:"desierto-altiplano", name:"Desierto y altiplano", mood:"Zona desértica o altiplánica, tonos tierra",
+    palette:{bg_deep:"#1E2A57",bg_mid:"#33407A",surface:"#F5EFE7",surface_2:"#E4D8C8",accent:"#BC2E5C",accent_2:"#3F8F6F",alert:"#D3402B",ink:"#2C2A33"},
+    fonts:{display:"Zilla Slab",hand:"Caveat",sans:"Chivo"}},
+  {id:"caleta-vintage", name:"Caleta vintage", mood:"Pueblo pesquero antiguo, estética retro marinera",
+    palette:{bg_deep:"#1D3A44",bg_mid:"#2F5560",surface:"#E8E4D8",surface_2:"#D3CCBB",accent:"#2E7E8B",accent_2:"#E3B23C",alert:"#B02417",ink:"#22282B"},
+    fonts:{display:"Bevan",hand:"Yellowtail",sans:"Archivo Narrow"}}
+];
+
+function renderThemes(){
+  const grid = document.getElementById("themeGrid");
+  THEMES.forEach(t=>{
+    const label = document.createElement("label");
+    label.className = "theme-card";
+    label.innerHTML =
+      '<input type="radio" name="design_theme" value="'+t.id+'">'+
+      '<span class="theme-card__swatches">'+
+        ['bg_deep','accent','accent_2','surface_2'].map(k=>'<i style="background:'+t.palette[k]+'"></i>').join('')+
+      '</span>'+
+      '<span class="theme-card__name" style="font-family:\''+t.fonts.display+'\',serif">'+t.name+'</span>'+
+      '<span class="theme-card__mood">'+t.mood+'</span>'+
+      '<span class="theme-card__sign" style="font-family:\''+t.fonts.hand+'\',cursive;color:'+t.palette.accent+'">Firma del anfitrión</span>';
+    grid.appendChild(label);
+  });
+  const customLabel = document.createElement("label");
+  customLabel.className = "theme-card custom";
+  customLabel.innerHTML = '<input type="radio" name="design_theme" value="custom"><span class="theme-card__name">Ninguno — definiré mis propios colores</span><span class="theme-card__mood">Usa los campos de abajo para describirlo</span>';
+  grid.appendChild(customLabel);
+}
+
+const REP_SECTIONS = {
+  apartments: {listId:"apartmentsList", tpl:"tpl-apartments", chipLabel:n=>String(n)},
+  zonas:      {listId:"zonasList",      tpl:"tpl-zonas",      chipLabel:n=>String(n)},
+  restos:     {listId:"restosList",     tpl:"tpl-restos",     chipLabel:n=>String(n)},
+  salud:      {listId:"saludList",      tpl:"tpl-salud",      chipLabel:n=>String(n)}
+};
+
+function addRepItem(kind, data){
+  const cfg = REP_SECTIONS[kind];
+  const tpl = document.getElementById(cfg.tpl);
+  const node = tpl.content.firstElementChild.cloneNode(true);
+  if(data){
+    node.querySelectorAll("[data-f]").forEach(el=>{
+      const v = data[el.dataset.f];
+      if(v === undefined) return;
+      if(el.type === "checkbox") el.checked = !!v; else el.value = v;
+    });
+  }
+  node.querySelector("[data-del]").addEventListener("click", ()=>{ node.remove(); onChange(); });
+  document.getElementById(cfg.listId).appendChild(node);
+}
+
+document.querySelectorAll("[data-add]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{ addRepItem(btn.dataset.add); onChange(); });
+});
+
+function serialize(){
+  const out = {fixed:{}, reps:{}};
+  document.querySelectorAll("main [data-f]").forEach(el=>{
+    if(el.closest("[data-item]")) return;
+    if(el.type === "radio") return;
+    out.fixed[el.dataset.f] = el.type === "checkbox" ? el.checked : el.value;
+  });
+  const checkedTheme = document.querySelector('input[name="design_theme"]:checked');
+  out.fixed.design_theme = checkedTheme ? checkedTheme.value : "";
+  Object.keys(REP_SECTIONS).forEach(kind=>{
+    out.reps[kind] = [...document.querySelectorAll('[data-item="'+kind+'"]')].map(item=>{
+      const o = {};
+      item.querySelectorAll("[data-f]").forEach(el=>{
+        o[el.dataset.f] = el.type === "checkbox" ? el.checked : el.value;
+      });
+      return o;
+    });
+  });
+  return out;
+}
+
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(serialize())); }catch(e){}
+}
+
+function restore(){
+  let data;
+  try{ data = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); }catch(e){ data = null; }
+  if(!data) return;
+  Object.entries(data.fixed || {}).forEach(([k,v])=>{
+    if(k === "design_theme"){
+      if(v){ const r = document.querySelector('input[name="design_theme"][value="'+CSS.escape(v)+'"]'); if(r) r.checked = true; }
+      return;
+    }
+    const el = document.querySelector('main [data-f="'+k+'"]:not([data-item] [data-f])');
+    if(!el || el.disabled || el.type === "radio") return;
+    if(el.type === "checkbox") el.checked = !!v; else el.value = v;
+  });
+  Object.entries(data.reps || {}).forEach(([kind, items])=>{
+    items.forEach(d=>addRepItem(kind, d));
+  });
+}
+
+function countFixed(selectorRoot){
+  const els = selectorRoot.querySelectorAll("[data-f]");
+  let total=0, filled=0;
+  els.forEach(el=>{
+    if(el.closest("[data-item]")) return;
+    if(el.disabled) return;
+    if(el.type === "radio") return;
+    total++;
+    if(el.type === "checkbox"){ if(el.checked) filled++; }
+    else if(el.value.trim()!=="") filled++;
+  });
+  if(selectorRoot.id === "langdesign"){
+    total++;
+    if(document.querySelector('input[name="design_theme"]:checked')) filled++;
+  }
+  return {total, filled};
+}
+
+const SECTION_MODE = {
+  host:"fixed", brand:"fixed", langdesign:"fixed",
+  apartments:"reps", checkinout:"fixed", building:"fixed", area:"reps",
+  safety:"fixed-plus-reps", map:"fixed", photos:"fixed"
+};
+
+function onChange(){
+  save();
+  let totalAll=0, filledAll=0;
+
+  document.querySelectorAll("section.card").forEach(sec=>{
+    const id = sec.id;
+    const mode = SECTION_MODE[id];
+    const chip = document.querySelector('[data-chip="'+id+'"]');
+    const countLbl = document.querySelector('[data-count="'+id+'"]');
+    if(mode === "reps"){
+      const kind = id === "apartments" ? "apartments" : null;
+      let n = 0;
+      if(id === "apartments") n = document.querySelectorAll('[data-item="apartments"]').length;
+      if(id === "area") n = document.querySelectorAll('[data-item="zonas"]').length + document.querySelectorAll('[data-item="restos"]').length;
+      chip.textContent = id === "area" ? (n+" ítems") : (n+" deptos");
+      chip.classList.toggle("done", n>0);
+      countLbl.textContent = "";
+    } else if(mode === "fixed-plus-reps"){
+      const {total, filled} = countFixed(sec);
+      const saludN = document.querySelectorAll('[data-item="salud"]').length;
+      chip.textContent = filled+"/"+total;
+      chip.classList.toggle("done", filled===total && total>0);
+      countLbl.textContent = saludN+" centro(s) de salud agregado(s)";
+      totalAll += total; filledAll += filled;
+    } else {
+      const {total, filled} = countFixed(sec);
+      chip.textContent = filled+"/"+total;
+      chip.classList.toggle("done", filled===total && total>0);
+      countLbl.textContent = "";
+      totalAll += total; filledAll += filled;
+    }
+  });
+
+  const pct = totalAll ? Math.round(filledAll/totalAll*100) : 0;
+  document.getElementById("progressBar").style.width = pct+"%";
+  document.getElementById("progressLabel").textContent = pct+"% completo (campos de texto)";
+}
+
+document.addEventListener("input", e=>{ if(e.target.closest("main")) onChange(); });
+document.addEventListener("change", e=>{ if(e.target.closest("main")) onChange(); });
+
+function buildSummary(){
+  const d = serialize();
+  const f = d.fixed;
+  const yn = v => v ? "sí" : "no";
+  const line = (label, val) => (val!==undefined && val!==null && String(val).trim()!=="") ? (label+": "+val) : null;
+  const L = [];
+  const push = (...lines) => lines.forEach(l=>{ if(l) L.push(l); });
+
+  L.push("=== ANFITRIÓN ===");
+  push(line("Nombre", f.host_nombre), line("WhatsApp", f.host_whatsapp), line("Frase de cierre/firma", f.host_firma_frase), line("Estilo de portada", f.host_estilo_portada), line("Nota foto/avatar", f.host_foto_nota));
+  if(f.host_bio) { L.push("Bio:"); L.push(f.host_bio); }
+  L.push("");
+
+  L.push("=== BRANDING Y UBICACIÓN ===");
+  push(line("Nombre del edificio/condominio", f.brand_nombre), line("Ciudad", f.brand_ciudad), line("Región/kicker", f.brand_region),
+       line("País", f.brand_pais), line("Dirección", f.brand_direccion), line("Google Maps", f.brand_maps_link), line("Coordenadas", f.brand_coordenadas));
+  L.push("");
+
+  const langs = [["lang_es","ES"],["lang_en","EN"],["lang_pt","PT"],["lang_fr","FR"],["lang_zh","ZH"],["lang_ja","JA"]]
+    .filter(([k])=>f[k]).map(([,l])=>l);
+  L.push("=== IDIOMAS Y DISEÑO ===");
+  push("Idiomas: "+(langs.join(", ")||"ES"));
+  const theme = THEMES.find(t=>t.id === f.design_theme);
+  if(theme){
+    push("Tema visual elegido: "+theme.name+" ("+theme.mood+")");
+    push("Paleta: bg_deep "+theme.palette.bg_deep+" · bg_mid "+theme.palette.bg_mid+" · surface "+theme.palette.surface+
+      " · surface_2 "+theme.palette.surface_2+" · accent "+theme.palette.accent+" · accent_2 "+theme.palette.accent_2+
+      " · alert "+theme.palette.alert+" · ink "+theme.palette.ink);
+    push("Tipografías del tema: display="+theme.fonts.display+" · hand="+theme.fonts.hand+" · sans="+theme.fonts.sans);
+  } else if(f.design_theme === "custom"){
+    push("Tema visual: personalizado (ver ajustes/colores de referencia abajo)");
+  } else {
+    push("Tema visual: (sin elegir)");
+  }
+  push(line("Ajustes sobre el tema", f.design_colores), line("Tipografía", f.design_tipografia), line("Referencias visuales", f.design_referencias));
+  L.push("");
+
+  L.push("=== DEPARTAMENTOS ("+d.reps.apartments.length+") ===");
+  d.reps.apartments.forEach((a,i)=>{
+    L.push("--- Depto "+(i+1)+" ---");
+    push(line("Nombre", a.nombre), line("Piso", a.piso), line("Estacionamiento", a.estacionamiento),
+      line("Capacidad (huéspedes)", a.capacidad), line("Habitaciones", a.habitaciones), line("Camas", a.camas), line("Baños", a.banos),
+      line("WiFi red", a.wifi_red), line("WiFi clave", a.wifi_clave), line("Acceso", a.acceso_metodo),
+      line("Check-in", a.checkin), line("Check-out", a.checkout), line("Airbnb", a.airbnb_link),
+      line("Rating", a.rating), line("Reseñas", a.resenas),
+      "Fumar: "+yn(a.normas_fumar)+" · Mascotas: "+yn(a.normas_mascotas)+" · Fiestas: "+yn(a.normas_fiestas),
+      line("Visitas", a.normas_visitas), line("Sanciones", a.normas_sanciones), line("Equipamiento extra", a.equipamiento_notas),
+      line("Pasos para llegar", a.pasos_llegada));
+    const fotosDepto = [["foto_interior","interior"],["foto_cerradura","cerradura"],["foto_ducto_basura","ducto basura"],["foto_puerta_residuos","puerta residuos"]]
+      .filter(([k])=>a[k]).map(([,l])=>l);
+    if(fotosDepto.length) L.push("Fotos reunidas: "+fotosDepto.join(", "));
+  });
+  L.push("");
+
+  L.push("=== CHECK-IN / CHECK-OUT (general) ===");
+  push(line("Cómo se envía el código", f.checkin_metodo_envio), line("Llegada antes/salida tarde", f.checkin_llegada_tarde), line("Pasos de checkout", f.checkout_pasos));
+  L.push("");
+
+  L.push("=== EDIFICIO / CONDOMINIO ===");
+  push(line("Tipo", f.building_tipo));
+  const am = [["am_piscina","Piscina"],["am_quincho","Quincho/BBQ"],["am_lavanderia","Lavandería"],["am_gimnasio","Gimnasio"],["am_porteria","Portería 24/7"],["am_estac_visitas","Estac. visitas"]]
+    .filter(([k])=>f[k]).map(([,l])=>l);
+  push("Amenities: "+(am.join(", ")||"ninguno indicado"), line("Lavandería (marca/pago)", f.building_lavanderia_detalle),
+    line("Otros amenities", f.building_amenities_otros), line("Horarios/restricciones", f.building_horarios));
+  L.push("");
+
+  L.push("=== ZONA Y RECOMENDACIONES ===");
+  L.push("Zonas destacadas:");
+  d.reps.zonas.forEach(z=> push(line("- "+(z.nombre||"(sin nombre)"), z.linea)));
+  L.push("Restaurantes/lugares:");
+  d.reps.restos.forEach(r=>{
+    push("- "+(r.nombre||"(sin nombre)")+" ["+(r.categoria||"?")+"] "+(r.distancia||"")+(r.top?" ★ elección top":"")+
+      (r.direccion?" · "+r.direccion:"")+(r.blurb?" — "+r.blurb:""));
+  });
+  L.push("");
+
+  L.push("=== EMERGENCIAS Y SALUD ===");
+  push(line("Ambulancia", f.emerg_ambulancia), line("Bomberos", f.emerg_bomberos), line("Policía", f.emerg_policia), line("Otro", f.emerg_otro));
+  const riesgos = [["riesgo_sismo","Sismo"],["riesgo_tsunami","Tsunami"],["riesgo_incendio_forestal","Incendio forestal"],["riesgo_huracan","Huracán"],["riesgo_nieve","Nieve/hielo"]]
+    .filter(([k])=>f[k]).map(([,l])=>l);
+  push("Riesgos aplicables: "+(riesgos.join(", ")||"ninguno indicado"), line("Instrucciones específicas", f.riesgo_notas));
+  L.push("Centros de salud:");
+  d.reps.salud.forEach(s=> push(line("- "+(s.nombre||"(sin nombre)")+" ("+(s.tipo||"?")+")", (s.direccion||"")+(s.horario?" · "+s.horario:"")+(s.telefono?" · tel "+s.telefono:""))));
+  L.push("");
+
+  L.push("=== MAPA ===");
+  push(line("Google My Maps", f.map_mymaps), line("Efecto de costa/ciudad en portada", f.map_efecto), line("Ubicación aproximada", f.map_ubicacion));
+  L.push("");
+
+  L.push("=== FOTOS PENDIENTES (edificio/anfitrión — las de cada depto van arriba) ===");
+  [["foto_fachada","Fachada/entrada"],["foto_comunes","Áreas comunes"],["foto_anfitrion","Foto/avatar anfitrión"]]
+    .forEach(([k,l])=> L.push("["+(f[k]?"x":" ")+"] "+l));
+
+  return L.join("\n");
+}
+
+document.getElementById("copyBtn").addEventListener("click", async ()=>{
+  const text = buildSummary();
+  const box = document.getElementById("summaryBox");
+  const out = document.getElementById("summaryOut");
+  out.value = text;
+  box.hidden = false;
+  try{
+    await navigator.clipboard.writeText(text);
+    document.getElementById("copyBtn").textContent = "Copiado ✓";
+  }catch(e){
+    out.focus(); out.select();
+    document.getElementById("copyBtn").textContent = "Selecciona y copia manualmente";
+  }
+  setTimeout(()=>{ document.getElementById("copyBtn").textContent = "Copiar resumen"; }, 2200);
+});
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(!confirm("¿Vaciar toda la ficha? No se puede deshacer.")) return;
+  try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+  location.reload();
+});
+
+renderThemes();
+restore();
+onChange();
+</script>
