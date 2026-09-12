@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>Sistema Visual de Guías</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Sacramento&family=Outfit:wght@400;500;700&family=Spectral:wght@400;600;700&family=Caveat:wght@400;500;600;700&family=Karla:wght@400;500;700&family=Marcellus&family=Mrs+Saint+Delafield&family=Yeseva+One&family=Yellowtail&family=Be+Vietnam+Pro:wght@400;500;700&family=Bricolage+Grotesque:wght@400;600;700&family=Unbounded:wght@400;600;700&family=Ms+Madi&family=Familjen+Grotesk:wght@400;500;700&family=Shadows+Into+Light&family=Hanken+Grotesk:wght@400;500;600&family=Archivo+Black&family=Permanent+Marker&family=Barlow:wght@400;500;700&family=Prata&family=Petit+Formal+Script&family=Cabin:wght@400;500;700&family=Zilla+Slab:wght@400;500;700&family=Chivo:wght@400;600&family=Bevan&family=Archivo+Narrow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3EFE6; --surface:#FBF9F3; --surface-2:#EAE2CE; --surface-3:#E1D6B8;
+  --border:rgba(36,30,20,.14); --border-strong:rgba(36,30,20,.24);
+  --text:#23201A; --text-70:rgba(35,32,26,.68); --text-45:rgba(35,32,26,.45);
+  --accent:#A8631F; --accent-ink:#fff; --accent-soft:rgba(168,99,31,.12);
+  --good:#4F7A52; --good-soft:rgba(79,122,82,.14);
+  --ui-display:'Archivo',system-ui,sans-serif;
+  --ui-body:'IBM Plex Sans',system-ui,sans-serif;
+  --ui-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1712; --surface:#241F18; --surface-2:#2D271D; --surface-3:#38301F;
+    --border:rgba(244,238,222,.14); --border-strong:rgba(244,238,222,.24);
+    --text:#F2ECDD; --text-70:rgba(242,236,221,.72); --text-45:rgba(242,236,221,.46);
+    --accent:#E3A65B; --accent-ink:#2A1B08; --accent-soft:rgba(227,166,91,.16);
+    --good:#7FAE7E; --good-soft:rgba(127,174,126,.16);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1712; --surface:#241F18; --surface-2:#2D271D; --surface-3:#38301F;
+  --border:rgba(244,238,222,.14); --border-strong:rgba(244,238,222,.24);
+  --text:#F2ECDD; --text-70:rgba(242,236,221,.72); --text-45:rgba(242,236,221,.46);
+  --accent:#E3A65B; --accent-ink:#2A1B08; --accent-soft:rgba(227,166,91,.16);
+  --good:#7FAE7E; --good-soft:rgba(127,174,126,.16);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ui-body);margin:0;line-height:1.5}
+h1,h2,h3{font-family:var(--ui-display);text-wrap:balance;margin:0}
+.mono{font-family:var(--ui-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+
+.wrap{max-width:1200px;margin:0 auto;padding:28px 20px 90px}
+
+/* top */
+.head{display:flex;flex-direction:column;gap:12px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.head__eyebrow{color:var(--accent);font-family:var(--ui-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.head h1{font-size:30px;font-weight:800;letter-spacing:-.01em}
+.head p{margin:0;color:var(--text-70);max-width:66ch;font-size:14.5px}
+
+/* theme bar */
+.bar{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--border);
+  padding:12px 0 12px;margin-bottom:24px;display:flex;flex-direction:column;gap:9px}
+.bar__label{font-family:var(--ui-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-45)}
+.seclinks{display:flex;gap:14px;flex-wrap:wrap;padding-bottom:2px}
+.seclinks a{font-size:12.5px;font-weight:600;color:var(--text-70);text-decoration:none;
+  border-bottom:1.5px solid transparent;padding-bottom:1px}
+.seclinks a:hover{color:var(--text);border-bottom-color:var(--accent)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--surface);
+  border-radius:20px;padding:5px 12px 5px 6px;font-size:12.5px;font-weight:500;color:var(--text-70);cursor:pointer;
+  font-family:var(--ui-body);white-space:nowrap}
+.chip:hover{border-color:var(--border-strong)}
+.chip[aria-pressed="true"]{border-color:var(--accent);color:var(--text);background:var(--accent-soft)}
+.chip__dots{display:flex;gap:2px}
+.chip__dots i{width:9px;height:9px;border-radius:50%;display:block}
+
+/* sections */
+section{margin-bottom:44px;scroll-margin-top:96px}
+section>header{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+section h2{font-size:20px;font-weight:700}
+section>header .mono{color:var(--text-45)}
+section>.lead{color:var(--text-70);font-size:14px;margin:0 0 20px;max-width:70ch}
+
+/* preview phone */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:20px}
+.pv{display:flex;flex-direction:column;gap:9px}
+.pv__frame{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--border-strong);
+  aspect-ratio:9/16;background:var(--pv-bg-deep,#111);color:var(--pv-ink,#fff);isolation:isolate}
+.pv__meta{display:flex;flex-direction:column;gap:2px}
+.pv__name{font-size:14px;font-weight:600;font-family:var(--ui-display)}
+.pv__for{font-size:11.5px;color:var(--text-45);line-height:1.35}
+
+/* ── PLANTILLAS DE PORTADA (se renderizan a 390×693 y se escalan al marco) ── */
+.pv__scale{position:absolute;top:0;left:0;width:390px;height:693px;transform-origin:top left}
+.cv{width:390px;height:693px;position:relative;overflow:hidden;background:var(--surface);
+  font-family:var(--sans);color:var(--ink)}
+.cv .av{display:grid;place-items:center;font-family:var(--display);font-size:22px;
+  background:var(--bg-mid);color:var(--surface);flex-shrink:0}
+.cv em{font-style:normal}
+
+/* 1 revista */
+.pr{padding:0 20px 24px}
+.pr__top{height:206px;margin:0 -20px;background:linear-gradient(170deg,var(--bg-deep),var(--bg-mid));
+  clip-path:polygon(0 0,100% 0,100% 84%,0 100%)}
+.pr__k{position:absolute;left:-24px;top:104px;transform:rotate(-90deg);transform-origin:left;
+  font:500 11px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent-2)}
+.pr__t{font-family:var(--display);font-weight:300;font-size:44px;line-height:.98;
+  margin:22px 0 0 -4px;color:var(--ink);position:relative}
+.pr__t em{font-family:var(--hand);color:var(--accent)}
+.pr__host{display:flex;align-items:center;gap:12px;margin:18px 0}
+.pr__host b{font:500 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2)}
+.pr .av{width:54px;height:54px;border-radius:50%;outline:2px solid var(--accent);outline-offset:3px}
+.pr__cards{display:flex;gap:10px;overflow:hidden;margin:0 -20px;padding:0 20px}
+.pr__cards a{flex:0 0 62%;background:var(--surface-2);padding:14px;border-radius:14px 14px 2px 14px;
+  font:400 17px var(--display)}
+.pr__cards small{display:block;margin-top:5px;font:500 10px var(--sans);letter-spacing:.14em;color:var(--accent-2)}
+
+/* 2 pasaporte */
+.pp{background:var(--bg-deep);color:var(--surface);padding:18px 20px 24px}
+.pp__bar{font:500 10px/1 var(--sans);letter-spacing:.34em;color:var(--accent-2);
+  border-block:1px solid color-mix(in srgb,var(--accent-2) 40%,transparent);padding:7px 0}
+.pp__t{font-family:var(--display);font-size:40px;font-weight:300;line-height:1;margin:22px 0 0}
+.pp__t em{font-family:var(--hand);color:var(--accent)}
+.pp__stamp{position:absolute;right:18px;top:82px;width:72px;height:72px;display:grid;place-items:center;
+  transform:rotate(-12deg);border:2px solid var(--accent);border-radius:50%;
+  font:600 22px var(--display);color:var(--accent)}
+.pp__cut{margin:22px -20px;border-top:2px dashed color-mix(in srgb,var(--surface) 28%,transparent)}
+.pp__row{display:flex;align-items:baseline;gap:8px;padding:13px 0;font:400 17px var(--display);
+  border-bottom:1px solid color-mix(in srgb,var(--surface) 14%,transparent)}
+.pp__row s{flex:1;border-bottom:1px dotted currentColor;opacity:.4;text-decoration:none}
+.pp__row b{font:500 11px var(--sans);letter-spacing:.16em;color:var(--accent-2)}
+
+/* 3 postal */
+.po{padding:20px;margin:14px;width:362px;height:665px;
+  border:1px solid color-mix(in srgb,var(--ink) 18%,transparent)}
+.po::after{content:"";position:absolute;inset:auto 0 0;height:90px;
+  background:radial-gradient(120% 100% at 30% 100%,var(--bg-mid) 60%,transparent 61%);opacity:.5}
+.po__t{font:300 32px/1.05 var(--display);margin:0 0 16px;max-width:62%}
+.po__t em{font-family:var(--hand);color:var(--accent)}
+.po__body{display:grid;grid-template-columns:1fr 1px 1fr;gap:16px;position:relative;z-index:1}
+.po__body::before{content:"";grid-column:2;background:color-mix(in srgb,var(--ink) 16%,transparent)}
+.po__body p{margin:0;font-size:12.5px;line-height:1.5;opacity:.75}
+.po__sign{font:600 30px var(--hand);color:var(--accent);display:block;margin-top:14px}
+.po__addr small{font:500 10px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--accent-2)}
+.po__addr a{display:block;margin-top:10px;padding-bottom:6px;font:400 16px var(--display);
+  border-bottom:1px solid color-mix(in srgb,var(--ink) 22%,transparent)}
+.po__stamp{position:absolute;top:16px;right:16px;width:44px;height:52px;background:var(--surface-2);
+  border:2px dashed var(--accent-2);font:500 12px var(--sans);color:var(--ink);display:grid;place-items:center}
+
+/* 4 app */
+.ap__bar{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;
+  font:500 11px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2)}
+.ap__hero{padding:26px 18px 30px;background:
+  radial-gradient(90% 70% at 78% 0%,var(--bg-mid),transparent 70%),var(--bg-deep);color:var(--surface)}
+.ap .av{width:64px;height:64px;border-radius:20px 20px 20px 4px;margin-bottom:16px}
+.ap__hero h1{font:300 34px/1.05 var(--display);margin:0}
+.ap__hero em{font-family:var(--hand);color:var(--accent)}
+.ap__row{display:flex;justify-content:space-between;align-items:center;padding:18px;
+  font:400 18px var(--display);background:var(--surface);
+  border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.ap__row small{font:500 11px var(--sans);letter-spacing:.12em;color:var(--accent-2);margin-left:auto;margin-right:10px}
+.ap__row::after{content:"›";color:var(--accent);font-size:22px}
+
+/* 5 póster */
+.ps{padding:20px;background:
+  repeating-linear-gradient(var(--surface) 0 31px,color-mix(in srgb,var(--ink) 8%,transparent) 31px 32px);
+  display:flex;flex-direction:column}
+.ps__k{align-self:flex-end;font:500 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--accent-2)}
+.ps__t{font:300 62px/.92 var(--display);letter-spacing:-.03em;margin:auto 0 0;color:var(--ink)}
+.ps__t em{font-family:var(--hand);font-size:56px;color:var(--accent)}
+.ps__l{list-style:none;counter-reset:n;margin:32px 0 0;padding:0}
+.ps__l li{counter-increment:n;display:flex;align-items:baseline;justify-content:space-between;padding:12px 0;
+  font:400 19px var(--display);border-top:1px solid var(--ink)}
+.ps__l li::before{content:"0" counter(n);font:500 11px var(--sans);color:var(--accent);margin-right:12px}
+.ps__l span{font:500 11px var(--sans);letter-spacing:.14em;color:var(--accent-2)}
+.ps__sign{font:600 26px var(--hand);color:var(--accent);margin-top:22px}
+
+/* 6 hotel */
+.ho{background:var(--bg-deep);padding:16px}
+.ho__f{border:1px solid var(--accent-2);outline:1px solid color-mix(in srgb,var(--accent-2) 35%,transparent);
+  outline-offset:5px;padding:34px 22px;text-align:center;color:var(--surface);height:100%;
+  background:radial-gradient(80% 50% at 50% 0%,var(--bg-mid),transparent)}
+.ho__k{font:500 10px var(--sans);letter-spacing:.4em;text-transform:uppercase;color:var(--accent-2)}
+.ho__f h1{font:300 34px/1.12 var(--display);margin:16px 0}
+.ho__f em{font-family:var(--hand);color:var(--accent)}
+.ho__r{display:block;width:40px;height:1px;background:var(--accent);margin:18px auto}
+.ho__sign{font:600 26px var(--hand);color:var(--accent)}
+.ho__keys{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:26px}
+.ho__keys a{background:var(--surface);color:var(--ink);padding:16px 10px;font:400 16px var(--display);
+  border-top:2px solid var(--accent)}
+.ho__keys small{display:block;margin-top:5px;font:500 10px var(--sans);letter-spacing:.16em;color:var(--accent-2)}
+
+/* 7 horizonte */
+.hz{padding:22px 20px 26px;background:var(--surface)}
+.hz::before{content:"";position:absolute;inset:0 0 auto;height:250px;
+  background:linear-gradient(200deg,var(--bg-deep),var(--bg-mid));clip-path:polygon(0 0,100% 0,100% 72%,0 100%)}
+.hz__k,.hz__t,.hz .av,.hz__g{position:relative}
+.hz__k{font:500 11px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--accent-2)}
+.hz__t{font:300 38px/1.06 var(--display);margin:14px 0 0;color:var(--surface)}
+.hz__t em{font-family:var(--hand);color:var(--accent);font-size:34px}
+.hz .av{width:58px;height:58px;border-radius:50%;margin:54px 0 0;box-shadow:0 0 0 6px var(--surface)}
+.hz__g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.hz__g a{background:var(--surface-2);padding:15px;font:400 16px var(--display);border-radius:2px 14px 2px 14px}
+.hz__g small{display:block;margin-top:4px;font:500 10px var(--sans);letter-spacing:.14em;color:var(--accent-2)}
+
+/* 8 etiqueta */
+.et{background:var(--bg-deep);padding:28px 18px 34px}
+.et__tag{display:flex;background:var(--surface);transform:rotate(-1.2deg);
+  border-radius:4px 18px 18px 4px;overflow:hidden;position:relative;
+  box-shadow:0 18px 40px -22px rgba(0,0,0,.6)}
+.et__tag::before{content:"";position:absolute;left:14px;top:16px;width:13px;height:13px;border-radius:50%;
+  background:var(--bg-deep);box-shadow:0 0 0 3px color-mix(in srgb,var(--ink) 12%,transparent)}
+.et__spine{writing-mode:vertical-rl;background:var(--accent);color:var(--bg-deep);padding:44px 9px 16px;
+  font:600 10px var(--sans);letter-spacing:.3em}
+.et__b{padding:22px 18px 24px;flex:1}
+.et__b h1{font:300 31px/1.08 var(--display);margin:0;color:var(--ink)}
+.et__b em{font-family:var(--hand);color:var(--accent-2)}
+.et__sign{display:block;font:600 24px var(--hand);color:var(--accent);margin:14px 0 18px}
+.et__tab{display:block;background:var(--surface-2);padding:13px 15px;font:400 16px var(--display);
+  clip-path:polygon(0 0,100% 0,100% 100%,14px 100%,0 calc(100% - 12px));margin-bottom:7px}
+
+/* typography cards */
+.typegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.tc{border:1px solid var(--border);border-radius:14px;padding:16px 18px 18px;background:var(--surface);
+  display:flex;flex-direction:column;gap:10px}
+.tc__title{font-family:var(--pv-display);font-size:26px;line-height:1.05;color:var(--text);letter-spacing:-.015em}
+.tc__title em{font-style:italic;display:block}
+.tc__sign{font-family:var(--pv-hand);font-size:26px;line-height:1;color:var(--pv-accent)}
+.tc__body{font-family:var(--pv-sans);font-size:12.5px;line-height:1.5;color:var(--text-70)}
+.tc__names{font-family:var(--ui-mono);font-size:10px;color:var(--text-45);line-height:1.6;
+  border-top:1px solid var(--border);padding-top:9px;display:flex;flex-direction:column;gap:1px}
+
+/* motion levels */
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-bottom:28px}
+.lvl{border:1px solid var(--border);border-radius:14px;padding:16px 18px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.lvl__n{font-family:var(--ui-display);font-size:15px;font-weight:700}
+.lvl__d{font-size:12.5px;color:var(--text-70)}
+.lvl ul{margin:0;padding-left:16px;font-size:12px;color:var(--text-70);line-height:1.65}
+.lvl__tag{align-self:flex-start;font-family:var(--ui-mono);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;
+  padding:2px 7px;border-radius:20px;background:var(--surface-3);color:var(--text-45)}
+.lvl__tag.default{background:var(--good-soft);color:var(--good)}
+
+/* effect demos */
+.demos{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.demo{border:1px solid var(--border);border-radius:14px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column}
+.demo__stage{background:var(--pv-surface);min-height:132px;padding:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:9px;position:relative;overflow:hidden}
+.demo__foot{padding:11px 14px 13px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:2px}
+.demo__n{font-size:13px;font-weight:600}
+.demo__t{font-family:var(--ui-mono);font-size:10px;color:var(--text-45)}
+.demo__hint{font-size:11.5px;color:var(--text-45)}
+
+.dbtn{font-family:var(--pv-sans);font-size:12.5px;font-weight:600;border:none;border-radius:9px;padding:9px 16px;
+  background:var(--pv-accent);color:var(--pv-surface);cursor:pointer;touch-action:manipulation;
+  transition:transform .16s cubic-bezier(.23,1,.32,1)}
+.dbtn:active{transform:scale(.96)}
+.dtile{width:100%;border-radius:10px;background:var(--pv-surface-2);color:var(--pv-ink);padding:11px 13px;
+  font-family:var(--pv-sans);font-size:12.5px;font-weight:600;border:none;text-align:left;cursor:pointer;
+  transition:transform .16s cubic-bezier(.23,1,.32,1),filter .16s ease}
+.dtile:active{transform:scale(.97);filter:brightness(.97)}
+
+/* d1 press */
+/* d2 wifi copy */
+.wifi{width:100%;display:flex;align-items:center;gap:9px;background:var(--pv-surface-2);border-radius:10px;padding:10px 12px;
+  transition:background .6s ease}
+.wifi.flash{background:color-mix(in srgb, var(--pv-accent-2) 26%, var(--pv-surface-2));transition:background 0s}
+.wifi__k{font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums;font-size:13px;color:var(--pv-ink);flex:1;
+  user-select:text}
+.wifi__b{font-family:var(--pv-sans);font-size:11.5px;font-weight:600;border:none;border-radius:7px;padding:6px 10px;
+  background:var(--pv-accent);color:var(--pv-surface);cursor:pointer;min-width:74px}
+.wifi__b span{display:inline-block;transition:opacity .14s ease,filter .14s ease}
+.wifi__b.swap span{opacity:0;filter:blur(3px)}
+
+/* d3 accordion */
+.acc{width:100%;background:var(--pv-surface-2);border-radius:10px;overflow:hidden}
+.acc__q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:none;border:none;
+  padding:11px 13px;font-family:var(--pv-sans);font-size:12.5px;font-weight:600;color:var(--pv-ink);cursor:pointer;text-align:left}
+.acc__chev{transition:transform .24s cubic-bezier(.23,1,.32,1);flex-shrink:0}
+.acc.on .acc__chev{transform:rotate(180deg)}
+.acc__a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .24s cubic-bezier(.77,0,.175,1)}
+.acc.on .acc__a{grid-template-rows:1fr}
+.acc__a>div{overflow:hidden}
+.acc__a p{margin:0;padding:0 13px 12px;font-family:var(--pv-sans);font-size:11.5px;line-height:1.5;color:var(--pv-ink);opacity:.78}
+
+/* d4 stagger */
+.stag{width:100%;display:flex;flex-direction:column;gap:6px}
+.stag i{display:block;height:26px;border-radius:8px;background:var(--pv-surface-2);opacity:0;transform:translateY(10px)}
+.stag.go i{animation:stagIn .32s cubic-bezier(.23,1,.32,1) forwards;animation-delay:calc(var(--i)*40ms)}
+@keyframes stagIn{to{opacity:1;transform:none}}
+
+/* d5 toast */
+.toast{position:absolute;bottom:14px;left:50%;translate:-50% 0;background:var(--pv-bg-deep);color:var(--pv-surface);
+  font-family:var(--pv-sans);font-size:12px;font-weight:600;padding:8px 15px;border-radius:20px;
+  opacity:0;transform:scale(.94) translateY(6px);transition:opacity .16s ease,transform .16s ease;pointer-events:none}
+.toast.on{opacity:1;transform:none;transition:opacity .22s cubic-bezier(.23,1,.32,1),transform .22s cubic-bezier(.34,1.56,.64,1)}
+
+/* d6 search crossfade */
+.srch{width:100%;display:flex;flex-direction:column;gap:7px}
+.srch input{width:100%;font-family:var(--pv-sans);font-size:12px;padding:8px 11px;border-radius:9px;
+  border:1px solid color-mix(in srgb, var(--pv-ink) 16%, transparent);background:var(--pv-surface);color:var(--pv-ink)}
+.srch input:focus{outline:none;box-shadow:0 0 0 3px color-mix(in srgb, var(--pv-accent) 34%, transparent)}
+.srch__res{display:flex;flex-direction:column;gap:4px;transition:opacity .14s ease,filter .14s ease}
+.srch__res.swap{opacity:.35;filter:blur(3px)}
+.srch__res b{font-family:var(--pv-sans);font-size:11.5px;font-weight:500;color:var(--pv-ink);background:var(--pv-surface-2);
+  border-radius:7px;padding:6px 10px}
+.srch__none{font-family:var(--pv-sans);font-size:11px;color:var(--pv-ink);opacity:.6;padding:6px 2px}
+
+/* d7 signature */
+.sig svg{width:100%;height:54px;display:block}
+.sig path{fill:none;stroke:var(--pv-accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.sig.go path{animation:draw 1.4s linear forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* d8 push navigation */
+.push{position:relative;width:118px;height:104px;border-radius:12px;overflow:hidden;background:var(--pv-bg-deep);
+  border:1px solid color-mix(in srgb, var(--pv-surface) 22%, transparent)}
+.push__s{position:absolute;inset:0;padding:11px;display:flex;flex-direction:column;gap:6px;justify-content:center;
+  transition:transform .3s cubic-bezier(.32,.72,0,1),opacity .3s cubic-bezier(.32,.72,0,1)}
+.push__s.a{background:var(--pv-bg-deep)}
+.push__s.b{background:var(--pv-surface);transform:translateX(100%)}
+.push.on .a{transform:translateX(-24%);opacity:.55}
+.push.on .b{transform:none}
+.push__l{height:7px;border-radius:4px;background:currentColor;opacity:.28}
+.push__s.a{color:var(--pv-surface)} .push__s.b{color:var(--pv-ink)}
+.push__t{font-family:var(--pv-display);font-size:12px;line-height:1.1}
+.push__s.a .push__t{color:var(--pv-surface)} .push__s.b .push__t{color:var(--pv-ink)}
+
+/* fondos de portada */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:16px}
+.bgc{display:flex;flex-direction:column;gap:8px}
+.bgc__f{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;border:1px solid var(--border-strong);
+  background:var(--pv-bg-deep);display:grid;place-items:center;isolation:isolate}
+.bgc__t{position:relative;z-index:2;font-family:var(--pv-display);font-size:19px;color:var(--pv-surface);
+  text-align:center;padding:0 16px;line-height:1.15;text-shadow:0 1px 12px rgba(0,0,0,.35)}
+.bgc__n{font-size:13px;font-weight:600}
+.bgc__d{font-size:11.5px;color:var(--text-45);line-height:1.4}
+
+.bg-aurora::before,.bg-aurora::after{content:"";position:absolute;width:88%;aspect-ratio:1;border-radius:50%;
+  filter:blur(42px);opacity:.55;background:var(--pv-accent);z-index:0;will-change:transform}
+.bg-aurora::before{left:-28%;top:-18%;animation:auroraB 18s ease-in-out infinite alternate}
+.bg-aurora::after{background:var(--pv-accent-2);right:-24%;bottom:-16%;animation:auroraA 14s ease-in-out infinite alternate}
+@keyframes auroraA{to{transform:translate3d(-34%,-38%,0)}}
+@keyframes auroraB{to{transform:translate3d(46%,52%,0)}}
+
+.bg-grain{background:linear-gradient(160deg,var(--pv-bg-deep),var(--pv-bg-mid))}
+.bg-grain::after{content:"";position:absolute;inset:0;z-index:1;opacity:.1;pointer-events:none;
+  background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence baseFrequency='.8'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+
+.bg-dots{background:var(--pv-bg-deep)}
+.bg-dots::before{content:"";position:absolute;inset:0;z-index:0;
+  background:radial-gradient(circle,color-mix(in srgb,var(--pv-surface) 30%,transparent) 1px,transparent 1px) 0 0/18px 18px;
+  -webkit-mask:radial-gradient(130% 85% at 50% 0,#000,transparent);mask:radial-gradient(130% 85% at 50% 0,#000,transparent)}
+
+.bg-parts{background:linear-gradient(180deg,var(--pv-bg-deep),var(--pv-bg-mid))}
+.bg-parts canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+
+/* reference lists */
+.refgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+.ref{border:1px solid var(--border);border-radius:14px;padding:18px 20px 20px;background:var(--surface)}
+.ref h3{font-size:14px;font-weight:700;margin-bottom:10px}
+.ref ol,.ref ul{margin:0;padding-left:18px;font-size:12.5px;line-height:1.65;color:var(--text-70)}
+.ref li{margin-bottom:5px}
+.ref li b{color:var(--text);font-weight:600}
+.ref--warn{border-color:color-mix(in srgb,var(--accent) 36%,var(--border))}
+.ref--warn h3{color:var(--accent)}
+.spec{width:100%;border-collapse:collapse;font-size:12px}
+.spec td{padding:6px 8px 6px 0;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-70)}
+.spec td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
+.spec td:last-child{font-family:var(--ui-mono);font-size:10.5px;color:var(--text-45);white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){
+  .dbtn,.dtile,.push__s{transition:opacity .12s ease!important;transform:none!important}
+  .stag.go i{animation:none;opacity:1;transform:none}
+  .sig.go path{animation:none;stroke-dashoffset:0}
+  .toast.on{transform:none}
+  .bg-aurora::before,.bg-aurora::after{animation:none}
+}
+</style>
+
+<div class="wrap">
+  <div class="head">
+    <span class="head__eyebrow">Guías del huésped · sistema de diseño</span>
+    <h1>Catálogo de portadas, letras y efectos</h1>
+    <p>Vistas previas en vivo. Elige un tema arriba y todas las plantillas se redibujan con esa paleta y esas tipografías, para poder comparar combinaciones antes de construir la guía de cada anfitrión.</p>
+  </div>
+
+  <div class="bar">
+    <nav class="seclinks">
+      <a href="#portadas">Portadas</a><a href="#fondos">Fondos</a><a href="#tipografias">Tipografías</a>
+      <a href="#movimiento">Movimiento</a><a href="#reglas">Reglas</a>
+    </nav>
+    <span class="bar__label">Tema aplicado a las vistas previas</span>
+    <div class="chips" id="themeChips"></div>
+  </div>
+
+  <section id="portadas">
+    <header><h2>Plantillas de portada</h2><span class="mono" id="coverCount"></span></header>
+    <p class="lead">La primera pantalla que ve el huésped al abrir el link. Todas llevan los mismos ingredientes — condominio, título, avatar y firma, tarjetas de departamento — pero compuestos de forma distinta. Ninguna usa imágenes externas: el avatar es un monograma si el anfitrión no tiene foto.</p>
+    <div class="gallery" id="coverGallery"></div>
+  </section>
+
+  <section id="fondos">
+    <header><h2>Fondos de portada</h2><span class="mono">4 opciones · CSS y canvas ligero</span></header>
+    <p class="lead">Se combinan con cualquier plantilla y toman los colores del tema. Todos funcionan sin librerías externas y se apagan solos con <code>prefers-reduced-motion</code>.</p>
+    <div class="bgrid" id="bgGallery"></div>
+  </section>
+
+  <section id="tipografias">
+    <header><h2>Tipografías</h2><span class="mono">12 tríos · display + manuscrita + texto</span></header>
+    <p class="lead">Cada tema trae su propio trío. La display titula, la manuscrita firma, la sans lleva todo el texto funcional (normas, pasos, clave del WiFi). Aquí se ven los 12 a la vez, independientes del tema seleccionado arriba.</p>
+    <div class="typegrid" id="typeGallery"></div>
+  </section>
+
+  <section id="movimiento">
+    <header><h2>Movimiento</h2><span class="mono">3 niveles · 8 efectos en vivo</span></header>
+    <p class="lead">El anfitrión elige cuánto se mueve su guía. Los tres niveles usan los mismos efectos base: cambia cuántos se activan.</p>
+    <div class="levels">
+      <div class="lvl">
+        <span class="lvl__tag">Nivel 1</span>
+        <span class="lvl__n">Sobrio</span>
+        <span class="lvl__d">Solo lo funcional. Es también a lo que cae la guía cuando el huésped tiene el movimiento reducido activado.</span>
+        <ul><li>Cambio de pantalla por fundido (200 ms)</li><li>Respuesta al tocar</li><li>Acordeones</li><li>Cambio de resultados sin desenfoque</li></ul>
+      </div>
+      <div class="lvl">
+        <span class="lvl__tag default">Por defecto</span>
+        <span class="lvl__n">Equilibrado</span>
+        <span class="lvl__d">Lo del nivel sobrio, con la cascada y las confirmaciones que ayudan a entender qué pasó.</span>
+        <ul><li>Todo lo anterior, con empuje lateral entre pantallas</li><li>Cascada de tiles (40 ms)</li><li>Confirmación "Copiado" con rebote</li><li>Aparición de etapas al hacer scroll</li><li>Brillo de carga del clima</li></ul>
+      </div>
+      <div class="lvl">
+        <span class="lvl__tag">Nivel 3</span>
+        <span class="lvl__n">Expresivo</span>
+        <span class="lvl__d">Para anfitriones que quieren que la portada tenga un momento. Nada de esto toca datos críticos.</span>
+        <ul><li>Todo lo anterior</li><li>Firma que se dibuja sola</li><li>Paralaje en el hero</li><li>Temperatura que sube contando</li><li>Cascada más lenta (60 ms)</li></ul>
+      </div>
+    </div>
+    <div class="demos" id="demoGrid">
+
+      <div class="demo"><div class="demo__stage" data-themed>
+        <button class="dtile">Conectarte al WiFi</button>
+        <button class="dtile">Normas de la casa</button>
+      </div><div class="demo__foot">
+        <span class="demo__n">Respuesta al tocar</span>
+        <span class="demo__t">transform · 160 ms · ease-out</span>
+        <span class="demo__hint">Mantén presionada una tarjeta.</span>
+      </div></div>
+
+      <div class="demo"><div class="demo__stage" data-themed>
+        <div class="wifi" id="wifiRow">
+          <span class="wifi__k">d138torre8</span>
+          <button class="wifi__b" id="wifiBtn"><span>Copiar</span></button>
+        </div>
+      </div><div class="demo__foot">
+        <span class="demo__n">Copiar la clave del WiFi</span>
+        <span class="demo__t">crossfade con blur + flash 600 ms</span>
+        <span class="demo__hint">La interacción más repetida de toda la guía.</span>
+      </div></div>
+
+      <div class="demo"><div class="demo__stage" data-themed>
+        <div class="acc" id="accDemo">
+          <button class="acc__q">¿Se puede fumar?
+            <svg class="acc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="acc__a"><div><p>Edificio libre de humo. No se fuma dentro, ni en balcones ni ventanas. Aplica también a vapeadores.</p></div></div>
+        </div>
+      </div><div class="demo__foot">
+        <span class="demo__n">Acordeón</span>
+        <span class="demo__t">grid-template-rows · 240 ms</span>
+        <span class="demo__hint">Anima altura desconocida sin medir con JS.</span>
+      </div></div>
+
+      <div class="demo"><div class="demo__stage" data-themed>
+        <div class="stag" id="stagDemo"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i></div>
+        <button class="dbtn" data-replay="stag">Repetir</button>
+      </div><div class="demo__foot">
+        <span class="demo__n">Cascada de tiles</span>
+        <span class="demo__t">40 ms × índice · tope 6</span>
+        <span class="demo__hint">Nunca bloquea el toque mientras entra.</span>
+      </div></div>
+
+      <div class="demo"><div class="demo__stage" data-themed>
+        <button class="dbtn" id="toastBtn">Guardar en la lista</button>
+        <div class="toast" id="toastEl">Guardado ✓</div>
+      </div><div class="demo__foot">
+        <span class="demo__n">Confirmación con rebote</span>
+        <span class="demo__t">220 ms · overshoot 5%</span>
+        <span class="demo__hint">Entra con rebote, sale sin él.</span>
+      </div></div>
+
+      <div class="demo"><div class="demo__stage" data-themed>
+        <div class="srch">
+          <input id="srchInput" placeholder="Ej: estacionamiento" aria-label="Buscador de demostración">
+          <div class="srch__res" id="srchRes"></div>
+        </div>
+      </div><div class="demo__foot">
+        <span class="demo__n">Resultados del buscador</span>
+        <span class="demo__t">opacity + blur 3px · 140 ms</span>
+        <span class="demo__hint">Sin cascada: se teclea muchas veces y se sentiría lento.</span>
+      </div></div>
+
+      <div class="demo"><div class="demo__stage" data-themed>
+        <div class="sig" id="sigDemo">
+          <svg viewBox="0 0 220 54" preserveAspectRatio="xMidYMid meet">
+            <path d="M14 40 C 26 10, 34 8, 38 22 C 42 36, 34 44, 30 40 C 26 36, 40 22, 58 24 C 70 25, 66 40, 74 40 C 84 40, 86 18, 96 18 C 104 18, 100 40, 110 40 C 122 40, 122 16, 134 16 C 144 16, 138 40, 150 40 C 166 40, 172 20, 196 26"/>
+          </svg>
+        </div>
+        <button class="dbtn" data-replay="sig">Repetir</button>
+      </div><div class="demo__foot">
+        <span class="demo__n">Firma que se dibuja</span>
+        <span class="demo__t">stroke-dashoffset · 1400 ms · linear</span>
+        <span class="demo__hint">Solo en la portada, solo una vez. Nivel expresivo.</span>
+      </div></div>
+
+      <div class="demo"><div class="demo__stage" data-themed>
+        <div class="push" id="pushDemo">
+          <div class="push__s a"><span class="push__t">Tu guía<br>empieza aquí</span><i class="push__l"></i><i class="push__l"></i></div>
+          <div class="push__s b"><span class="push__t">Bienvenidos</span><i class="push__l"></i><i class="push__l"></i><i class="push__l"></i></div>
+        </div>
+        <button class="dbtn" data-push="1">Entrar / volver</button>
+      </div><div class="demo__foot">
+        <span class="demo__n">Empuje entre pantallas</span>
+        <span class="demo__t">320 ms · paralaje 1:0.24</span>
+        <span class="demo__hint">La capa de atrás se va más lento: da sentido espacial.</span>
+      </div></div>
+
+    </div>
+  </section>
+
+  <section id="reglas">
+    <header><h2>Reglas del sistema</h2><span class="mono">lo que se verifica antes de publicar</span></header>
+    <p class="lead">Destilado de la auditoría de diseño, interacción y UX. Sirve como checklist al construir la guía de cada anfitrión.</p>
+    <div class="refgrid">
+
+      <div class="ref"><h3>10 reglas de oro</h3><ol>
+        <li>El hero <b>no pasa del 35% de la pantalla</b>: al abrir deben verse saludo, buscador y dos tiles completas.</li>
+        <li>Sin <b>eyebrows</b> en mayúsculas sobre el título; el título aguanta solo.</li>
+        <li><b>Un solo sistema de íconos</b>: SVG dentro de las tiles, emoji solo en el separador de etapa.</li>
+        <li>Target táctil <b>mínimo 48px</b> con 8px de separación.</li>
+        <li><b>Contraste 4.5:1</b> verificado en los 12 temas, no solo en el primero.</li>
+        <li>La tile nombra <b>la acción, no la categoría</b>: "Conectarte al WiFi", no "WiFi".</li>
+        <li>La <b>clave del WiFi se ve sin scroll</b>, en 20px+, con botón copiar que confirma.</li>
+        <li><b>Un solo vocabulario de transición</b> en todo el producto.</li>
+        <li>La tile es el <b>único contenedor tipo card</b>: dentro del detalle, aire y líneas finas.</li>
+        <li>Primera carga <b>bajo 300KB</b> y abre en menos de 2,5s en 4G.</li>
+      </ol></div>
+
+      <div class="ref ref--warn"><h3>Anti-patrones</h3><ul>
+        <li><b>Card dentro de card</b> — duplica jerarquía y ruido.</li>
+        <li><b>Emoji como sistema de íconos</b> — renderiza distinto en cada teléfono.</li>
+        <li><b>Modales o bottom sheets</b> para contenido — el huésped quiere volver con el gesto del sistema.</li>
+        <li><b>Splash o intro animada</b> — nadie quiere ver cargar una guía frente a una puerta cerrada.</li>
+        <li><b>15 filas con línea divisoria</b> en normas — agrupa en 3 bloques temáticos.</li>
+        <li><b>Micro-metadatos decorativos</b> en el header — no son accionables.</li>
+      </ul></div>
+
+      <div class="ref"><h3>Los 3 momentos críticos</h3><ul>
+        <li><b>Llega de noche y no sabe entrar.</b> Al abrir: llegada expandida, código en grande y copiable, foto del acceso, botón a portería. Sin pasar por la portada.</li>
+        <li><b>Recién instalado, busca el WiFi.</b> SSID y clave visibles desde la guía, sin abrir el detalle. QR <code>WIFI:</code> para no teclear tildes.</li>
+        <li><b>Emergencia.</b> Teléfonos como botones <code>tel:</code> de ancho completo arriba del pliegue, sin scroll y sin animación de entrada.</li>
+      </ul></div>
+
+      <div class="ref"><h3>Tiempos y curvas</h3><table class="spec">
+        <tr><td>Respuesta al tocar</td><td>escala a .97</td><td>100–160 ms</td></tr>
+        <tr><td>Chips y acordeones</td><td>altura / posición</td><td>150–250 ms</td></tr>
+        <tr><td>Cambio de pantalla</td><td>empuje lateral</td><td>200–320 ms</td></tr>
+        <tr><td>Volver</td><td>espejo del empuje</td><td>240 ms</td></tr>
+        <tr><td>Resultados del buscador</td><td>opacity + blur</td><td>140 ms</td></tr>
+        <tr><td>Firma dibujada</td><td>stroke-dashoffset</td><td>1400 ms</td></tr>
+        <tr><td>Entradas y salidas</td><td>ease-out</td><td>.23,1,.32,1</td></tr>
+        <tr><td>Movimiento en pantalla</td><td>ease-in-out</td><td>.77,0,.175,1</td></tr>
+      </table></div>
+
+      <div class="ref"><h3>Detalles invisibles</h3><ul>
+        <li>Área táctil de <b>44×44</b> aunque el ícono mida 20px, con <code>::after</code> de inset negativo.</li>
+        <li><code>tabular-nums</code> en clave, temperatura, horarios y teléfonos.</li>
+        <li>Tracking: títulos <b>−.022em</b>, etiquetas en mayúsculas <b>+.07em</b>.</li>
+        <li>Radio anidado: interior = exterior − padding.</li>
+        <li><code>env(safe-area-inset-bottom)</code> en barras fijas.</li>
+        <li><code>user-select:text</code> en clave y dirección; bloqueado en el resto.</li>
+      </ul></div>
+
+      <div class="ref"><h3>Nunca animar</h3><ul>
+        <li>Los <b>números de emergencia</b> y el botón de WhatsApp: visibles y pulsables en el primer frame.</li>
+        <li>La <b>clave del WiFi</b> y los pasos de check-in: el huésped los está leyendo y tecleando.</li>
+        <li>El <b>mapa embebido</b>: es un iframe de terceros.</li>
+        <li>La <b>lista de resultados</b> del buscador: nada de cascada al teclear.</li>
+        <li>Con movimiento reducido: se apaga el desplazamiento, <b>se mantiene</b> el color y la opacidad — si se apaga todo, el huésped deja de saber si su toque funcionó.</li>
+      </ul></div>
+
+    </div>
+  </section>
+</div>
+
+<script>
+const THEMES = [
+  {id:"playa-tropical", name:"Playa tropical", mood:"Costa caribeña, cálida y luminosa",
+    palette:{bg_deep:"#062F3E",bg_mid:"#0D4757",surface:"#FFF6E9",surface_2:"#F7E3C6",accent:"#FF6B4A",accent_2:"#21C1D6",alert:"#C41E4E",ink:"#14313A"},
+    fonts:{display:"Fraunces",hand:"Sacramento",sans:"Outfit"}},
+  {id:"bosque-nordico", name:"Bosque nórdico", mood:"Cabañas de montaña, bosque frío o lago",
+    palette:{bg_deep:"#16242B",bg_mid:"#24373E",surface:"#F2EFE8",surface_2:"#DDD6C7",accent:"#A8613E",accent_2:"#7EA8AE",alert:"#B23A48",ink:"#23302F"},
+    fonts:{display:"Spectral",hand:"Caveat",sans:"Karla"}},
+  {id:"costa-mediterranea", name:"Costa mediterránea", mood:"Casas encaladas, azul intenso y piedra",
+    palette:{bg_deep:"#0E3C7A",bg_mid:"#17529E",surface:"#FCFAF5",surface_2:"#EAE2D2",accent:"#E7B53A",accent_2:"#2E86C8",alert:"#D6342B",ink:"#17253C"},
+    fonts:{display:"Marcellus",hand:"Mrs Saint Delafield",sans:"Archivo"}},
+  {id:"selva-exuberante", name:"Selva exuberante", mood:"Lodges rodeados de selva densa",
+    palette:{bg_deep:"#08211A",bg_mid:"#12392A",surface:"#F5F3E4",surface_2:"#E2E5CE",accent:"#D94F87",accent_2:"#2E6FD9",alert:"#E2402C",ink:"#16291F"},
+    fonts:{display:"Yeseva One",hand:"Yellowtail",sans:"Be Vietnam Pro"}},
+  {id:"loft-urbano", name:"Loft urbano moderno", mood:"Depto de diseño en ciudad grande",
+    palette:{bg_deep:"#2B2A28",bg_mid:"#3C3A36",surface:"#F0EEE9",surface_2:"#DFDBD2",accent:"#D9A521",accent_2:"#2C6E6B",alert:"#D1443B",ink:"#262523"},
+    fonts:{display:"Bricolage Grotesque",hand:"Caveat",sans:"Karla"}},
+  {id:"ciudad-nocturna", name:"Ciudad nocturna", mood:"Zona de vida nocturna y entretenimiento",
+    palette:{bg_deep:"#15112B",bg_mid:"#221C3F",surface:"#F3EFF6",surface_2:"#E2DBEC",accent:"#FFB627",accent_2:"#35D0EA",alert:"#FF3B5C",ink:"#1E1A2E"},
+    fonts:{display:"Unbounded",hand:"Ms Madi",sans:"Archivo"}},
+  {id:"minimalista-escandinavo", name:"Minimalista escandinavo", mood:"Nórdico, madera clara y sereno",
+    palette:{bg_deep:"#313A3A",bg_mid:"#4A5555",surface:"#FBFAF7",surface_2:"#EDE7DD",accent:"#6F93A6",accent_2:"#C99A5B",alert:"#BE3A34",ink:"#262B2B"},
+    fonts:{display:"Familjen Grotesk",hand:"Shadows Into Light",sans:"Hanken Grotesk"}},
+  {id:"industrial-ladrillo", name:"Industrial de ladrillo", mood:"Loft antiguo, ladrillo visto y acero",
+    palette:{bg_deep:"#241A16",bg_mid:"#3A2823",surface:"#E6E2DB",surface_2:"#D2C8BC",accent:"#B55A32",accent_2:"#4F8A8B",alert:"#F0B429",ink:"#2A211D"},
+    fonts:{display:"Archivo Black",hand:"Permanent Marker",sans:"Barlow"}},
+  {id:"casona-colonial", name:"Casona colonial", mood:"Adobe patrimonial, patios y muros encalados",
+    palette:{bg_deep:"#2F211D",bg_mid:"#4A342B",surface:"#F1EBDF",surface_2:"#E0D5C2",accent:"#B5872F",accent_2:"#2D6E9E",alert:"#A3242B",ink:"#26201B"},
+    fonts:{display:"Prata",hand:"Petit Formal Script",sans:"Karla"}},
+  {id:"vinedo-rural", name:"Viñedo y campo", mood:"Casa de campo entre parronales y huertos",
+    palette:{bg_deep:"#1F2E22",bg_mid:"#3A4A31",surface:"#E9EDE2",surface_2:"#D8DFCC",accent:"#7A2E4E",accent_2:"#C98A16",alert:"#BF3B26",ink:"#2B2E26"},
+    fonts:{display:"Fraunces",hand:"Mrs Saint Delafield",sans:"Cabin"}},
+  {id:"desierto-altiplano", name:"Desierto y altiplano", mood:"Zona desértica o altiplánica, tonos tierra",
+    palette:{bg_deep:"#1E2A57",bg_mid:"#33407A",surface:"#F5EFE7",surface_2:"#E4D8C8",accent:"#BC2E5C",accent_2:"#3F8F6F",alert:"#D3402B",ink:"#2C2A33"},
+    fonts:{display:"Zilla Slab",hand:"Caveat",sans:"Chivo"}},
+  {id:"caleta-vintage", name:"Caleta vintage", mood:"Pueblo pesquero antiguo, estética retro marinera",
+    palette:{bg_deep:"#1D3A44",bg_mid:"#2F5560",surface:"#E8E4D8",surface_2:"#D3CCBB",accent:"#2E7E8B",accent_2:"#E3B23C",alert:"#B02417",ink:"#22282B"},
+    fonts:{display:"Bevan",hand:"Yellowtail",sans:"Archivo Narrow"}}
+];
+
+let currentTheme = THEMES[0];
+
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let PARTICLE_COLOR = THEMES[0].palette.accent;
+
+function applyTheme(el, t){
+  const p = t.palette;
+  const pairs = {
+    "bg-deep":p.bg_deep, "bg-mid":p.bg_mid, "surface":p.surface, "surface-2":p.surface_2,
+    "accent":p.accent, "accent-2":p.accent_2, "alert":p.alert, "ink":p.ink
+  };
+  Object.entries(pairs).forEach(([k,v])=>{
+    el.style.setProperty("--pv-"+k, v);
+    el.style.setProperty("--"+k, v);
+  });
+  const fonts = {
+    display:"'"+t.fonts.display+"', Georgia, serif",
+    hand:"'"+t.fonts.hand+"', cursive",
+    sans:"'"+t.fonts.sans+"', system-ui, sans-serif"
+  };
+  Object.entries(fonts).forEach(([k,v])=>{
+    el.style.setProperty("--pv-"+k, v);
+    el.style.setProperty("--"+k, v);
+  });
+}
+
+/* ── plantillas de portada ── */
+const COVERS = [
+  {id:"revista", name:"Revista", use:"Loft o depto de diseño · 2 a 4 unidades", html:`
+    <header class="cv pr">
+      <div class="pr__top"></div>
+      <span class="pr__k">Distrito Verde · La Serena</span>
+      <h1 class="pr__t">Tu guía<br><em>empieza</em> aquí</h1>
+      <div class="pr__host"><div class="av">P</div>
+        <div><b>Superanfitrión</b><div style="font:600 26px var(--hand);color:var(--accent);line-height:1">Paula</div></div></div>
+      <div class="pr__cards"><a>Depto 138<small>PISO 1</small></a><a>Depto 536<small>PISO 5</small></a></div>
+    </header>`},
+  {id:"pasaporte", name:"Pasaporte", use:"Edificios grandes, aparthoteles, varias unidades", html:`
+    <header class="cv pp">
+      <div class="pp__bar">GUÍA DEL HUÉSPED · CL-LSC</div>
+      <h1 class="pp__t">Tu guía<br><em>empieza</em> aquí</h1>
+      <span class="pp__stamp">P</span>
+      <div class="pp__cut"></div>
+      <a class="pp__row">Depto 138 <s></s> <b>PISO 1</b></a>
+      <a class="pp__row">Depto 536 <s></s> <b>PISO 5</b></a>
+      <a class="pp__row">Depto 902 <s></s> <b>PISO 9</b></a>
+    </header>`},
+  {id:"postal", name:"Postal", use:"Casas de playa, cabañas, anfitriones cercanos", html:`
+    <header class="cv po">
+      <h1 class="po__t">Tu guía <em>empieza</em> aquí</h1>
+      <div class="po__body">
+        <div><p>Todo lo que necesitas para tu estadía, a un toque de distancia.</p>
+          <span class="po__sign">Paula</span></div>
+        <div class="po__addr"><small>Distrito Verde · La Serena</small>
+          <a>Depto 138 — Piso 1</a><a>Depto 536 — Piso 5</a></div>
+      </div>
+      <button class="po__stamp">ES</button>
+    </header>`},
+  {id:"app", name:"Pantalla de app", use:"Muchas unidades o huéspedes poco tecnológicos", html:`
+    <header class="cv ap">
+      <nav class="ap__bar"><span>Distrito Verde</span><span>ES</span></nav>
+      <div class="ap__hero"><div class="av">P</div><h1>Tu guía<br><em>empieza</em> aquí</h1></div>
+      <a class="ap__row">Depto 138<small>PISO 1</small></a>
+      <a class="ap__row">Depto 536<small>PISO 5</small></a>
+      <a class="ap__row">Depto 902<small>PISO 9</small></a>
+    </header>`},
+  {id:"poster", name:"Póster tipográfico", use:"Funciona sin foto del anfitrión · estética editorial", html:`
+    <header class="cv ps">
+      <span class="ps__k">La Serena · Chile</span>
+      <h1 class="ps__t">Tu<br>guía<br><em>empieza</em></h1>
+      <ol class="ps__l"><li>Depto 138 <span>PISO 1</span></li><li>Depto 536 <span>PISO 5</span></li></ol>
+      <span class="ps__sign">Paula · Superanfitriona</span>
+    </header>`},
+  {id:"hotel", name:"Bienvenida de hotel", use:"Alojamiento formal o boutique · 2 unidades", html:`
+    <header class="cv ho"><div class="ho__f">
+      <span class="ho__k">Distrito Verde</span>
+      <h1>Tu guía<br><em>empieza</em> aquí</h1>
+      <i class="ho__r"></i>
+      <span class="ho__sign">Paula</span>
+      <div class="ho__keys"><a>Depto 138<small>PISO 1</small></a><a>Depto 536<small>PISO 5</small></a></div>
+    </div></header>`},
+  {id:"horizonte", name:"Horizonte", use:"Vista al mar o al cerro · 3 a 4 unidades", html:`
+    <header class="cv hz">
+      <span class="hz__k">Distrito Verde · La Serena</span>
+      <h1 class="hz__t">Tu guía<br><em>empieza aquí</em></h1>
+      <div class="av">P</div>
+      <div class="hz__g"><a>Depto 138<small>PISO 1</small></a><a>Depto 536<small>PISO 5</small></a>
+        <a>Depto 902<small>PISO 9</small></a><a>Depto 1204<small>PISO 12</small></a></div>
+    </header>`},
+  {id:"etiqueta", name:"Etiqueta de equipaje", use:"Hostales y alojamientos jóvenes · tono informal", html:`
+    <header class="cv et"><div class="et__tag">
+      <span class="et__spine">LA SERENA · CHILE</span>
+      <div class="et__b"><h1>Tu guía<br><em>empieza</em> aquí</h1>
+        <span class="et__sign">Paula</span>
+        <a class="et__tab">Depto 138 · Piso 1</a><a class="et__tab">Depto 536 · Piso 5</a></div>
+    </div></header>`}
+];
+
+function renderCovers(){
+  const g = document.getElementById("coverGallery");
+  COVERS.forEach(c=>{
+    const wrap = document.createElement("div");
+    wrap.className = "pv";
+    wrap.innerHTML =
+      '<div class="pv__frame" data-themed><div class="pv__scale">'+c.html+'</div></div>'+
+      '<div class="pv__meta"><span class="pv__name">'+c.name+'</span><span class="pv__for">'+c.use+'</span></div>';
+    g.appendChild(wrap);
+  });
+  document.getElementById("coverCount").textContent = COVERS.length+" plantillas · se redibujan con el tema";
+  scaleCovers();
+  if(window.ResizeObserver){
+    const ro = new ResizeObserver(scaleCovers);
+    document.querySelectorAll(".pv__frame").forEach(f=>ro.observe(f));
+  }
+}
+
+/* el ancho del marco cambia al cargar las fuentes y al redimensionar: recalcular en ambos */
+function scaleCovers(){
+  document.querySelectorAll(".pv__frame").forEach(f=>{
+    const inner = f.querySelector(".pv__scale");
+    if(inner && f.clientWidth) inner.style.transform = "scale("+(f.clientWidth/390)+")";
+  });
+}
+addEventListener("resize", scaleCovers);
+if(document.fonts) document.fonts.ready.then(scaleCovers);
+requestAnimationFrame(()=>requestAnimationFrame(scaleCovers));
+
+/* ── fondos ── */
+const BGS = [
+  {id:"aurora", cls:"bg-aurora", n:"Aurora", d:"Dos manchas desenfocadas con los acentos del tema, flotando muy lento. Solo anima transform."},
+  {id:"grano", cls:"bg-grain", n:"Degradado con grano", d:"Degradado del tema más una textura de ruido SVG. Coste cero: no anima nada."},
+  {id:"puntos", cls:"bg-dots", n:"Malla de puntos", d:"Retícula de puntos difuminada hacia abajo con máscara. Estática, legible con cualquier paleta."},
+  {id:"particulas", cls:"bg-parts", n:"Partículas", d:"36 motas que suben despacio en canvas. Se detiene fuera de pantalla y con movimiento reducido."}
+];
+
+function renderBackgrounds(){
+  const g = document.getElementById("bgGallery");
+  BGS.forEach(b=>{
+    const wrap = document.createElement("div");
+    wrap.className = "bgc";
+    wrap.innerHTML =
+      '<div class="bgc__f '+b.cls+'" data-themed>'+
+        (b.id === "particulas" ? '<canvas></canvas>' : '')+
+        '<span class="bgc__t">Tu guía<br>empieza aquí</span></div>'+
+      '<div class="pv__meta"><span class="bgc__n">'+b.n+'</span><span class="bgc__d">'+b.d+'</span></div>';
+    g.appendChild(wrap);
+  });
+  startParticles(g.querySelector("canvas"));
+}
+
+function startParticles(cv){
+  if(!cv) return;
+  const ctx = cv.getContext("2d");
+  let w = 0, h = 0, parts = [], visible = true;
+  function size(){
+    const r = cv.getBoundingClientRect();
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    w = r.width; h = r.height;
+    cv.width = w*dpr; cv.height = h*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    parts = Array.from({length:36}, ()=>({x:Math.random()*w, y:Math.random()*h, v:.08+Math.random()*.22, s:Math.random()<.3?2:1.4}));
+  }
+  function frame(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = PARTICLE_COLOR;
+    ctx.globalAlpha = .4;
+    parts.forEach(p=>{ p.y -= p.v; if(p.y < 0) p.y = h; ctx.fillRect(p.x, p.y, p.s, p.s); });
+    if(visible && !RM) requestAnimationFrame(frame);
+  }
+  size();
+  addEventListener("resize", size);
+  new IntersectionObserver(es=>es.forEach(e=>{
+    visible = e.isIntersecting;
+    if(visible && !RM) requestAnimationFrame(frame);
+  })).observe(cv);
+  frame();
+}
+
+/* ── tipografías ── */
+function renderTypography(){
+  const g = document.getElementById("typeGallery");
+  THEMES.forEach(t=>{
+    const card = document.createElement("div");
+    card.className = "tc";
+    card.innerHTML =
+      '<div class="tc__title">Tu guía<em>empieza aquí</em></div>'+
+      '<div class="tc__sign">Paula</div>'+
+      '<div class="tc__body">Conéctate al WiFi apenas llegues. La clave está en la primera tarjeta, y se copia con un toque.</div>'+
+      '<div class="tc__names"><span>'+t.fonts.display+' · títulos</span><span>'+t.fonts.hand+' · firma</span><span>'+t.fonts.sans+' · texto</span></div>';
+    applyTheme(card, t);
+    g.appendChild(card);
+  });
+}
+
+/* ── demos ── */
+function wireDemos(){
+  const wifiBtn = document.getElementById("wifiBtn"), wifiRow = document.getElementById("wifiRow");
+  wifiBtn.addEventListener("click", ()=>{
+    const label = wifiBtn.querySelector("span");
+    wifiBtn.classList.add("swap");
+    wifiRow.classList.add("flash");
+    setTimeout(()=>{ label.textContent = "Copiado ✓"; wifiBtn.classList.remove("swap"); }, 140);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>wifiRow.classList.remove("flash")));
+    setTimeout(()=>{
+      wifiBtn.classList.add("swap");
+      setTimeout(()=>{ label.textContent = "Copiar"; wifiBtn.classList.remove("swap"); }, 140);
+    }, 1600);
+  });
+
+  const acc = document.getElementById("accDemo");
+  acc.querySelector(".acc__q").addEventListener("click", ()=>acc.classList.toggle("on"));
+
+  const toastBtn = document.getElementById("toastBtn"), toastEl = document.getElementById("toastEl");
+  let toastT;
+  toastBtn.addEventListener("click", ()=>{
+    toastEl.classList.add("on");
+    clearTimeout(toastT);
+    toastT = setTimeout(()=>toastEl.classList.remove("on"), 1800);
+  });
+
+  const ITEMS = ["Estacionamiento N°249","Clave del WiFi","Horario de check-out","Quinchos y piscina","Farmacia 24 h"];
+  const srchInput = document.getElementById("srchInput"), srchRes = document.getElementById("srchRes");
+  function paintResults(q){
+    const hits = ITEMS.filter(i=>i.toLowerCase().includes(q.trim().toLowerCase()));
+    srchRes.innerHTML = hits.length
+      ? hits.slice(0,3).map(i=>"<b>"+i+"</b>").join("")
+      : '<span class="srch__none">No encontré eso. Escríbele a Paula por WhatsApp.</span>';
+  }
+  srchInput.addEventListener("input", ()=>{
+    srchRes.classList.add("swap");
+    setTimeout(()=>{ paintResults(srchInput.value); srchRes.classList.remove("swap"); }, 140);
+  });
+  paintResults("");
+
+  const sig = document.getElementById("sigDemo"), sigPath = sig.querySelector("path");
+  const len = Math.ceil(sigPath.getTotalLength());
+  sig.style.setProperty("--len", len);
+  const stag = document.getElementById("stagDemo");
+  function replay(el){ el.classList.remove("go"); void el.offsetWidth; el.classList.add("go"); }
+  document.querySelectorAll("[data-replay]").forEach(b=>{
+    b.addEventListener("click", ()=>replay(b.dataset.replay === "sig" ? sig : stag));
+  });
+  replay(sig); replay(stag);
+
+  const push = document.getElementById("pushDemo");
+  document.querySelector("[data-push]").addEventListener("click", ()=>push.classList.toggle("on"));
+}
+
+function renderThemeChips(){
+  const bar = document.getElementById("themeChips");
+  THEMES.forEach(t=>{
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(t.id === currentTheme.id));
+    b.innerHTML = '<span class="chip__dots">'+
+      ['bg_deep','accent','accent_2'].map(k=>'<i style="background:'+t.palette[k]+'"></i>').join('')+
+      '</span>'+t.name;
+    b.addEventListener("click", ()=>{
+      currentTheme = t;
+      document.querySelectorAll("#themeChips .chip").forEach(c=>c.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");
+      paintAll();
+    });
+    bar.appendChild(b);
+  });
+}
+
+function paintAll(){
+  document.querySelectorAll("[data-themed]").forEach(el=>applyTheme(el, currentTheme));
+  PARTICLE_COLOR = currentTheme.palette.accent;
+}
+
+renderThemeChips();
+renderCovers();
+renderBackgrounds();
+renderTypography();
+wireDemos();
+paintAll();
+</script>
+
+</body>
+</html>
