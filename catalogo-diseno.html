@@ -348,6 +348,39 @@ section>.lead{color:var(--text-70);font-size:14px;margin:0 0 20px;max-width:70ch
 .bg-parts{background:linear-gradient(180deg,var(--pv-bg-deep),var(--pv-bg-mid))}
 .bg-parts canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 
+/* selección */
+.pv,.bgc,.tc,.lvl{position:relative;text-align:left;font:inherit;color:inherit;background:none;border:none;padding:0;
+  cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tc,.lvl{background:var(--surface);border:1px solid var(--border)}
+.pv:focus-visible,.bgc:focus-visible,.tc:focus-visible,.lvl:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.pv .pv__frame,.bgc .bgc__f{transition:box-shadow .18s ease,border-color .18s ease}
+.pv[aria-pressed="true"] .pv__frame,.bgc[aria-pressed="true"] .bgc__f{
+  border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),0 0 0 1px var(--accent)}
+.tc[aria-pressed="true"],.lvl[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pick-badge{position:absolute;top:9px;right:9px;z-index:5;width:22px;height:22px;border-radius:50%;
+  background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;display:none;
+  align-items:center;justify-content:center;line-height:1}
+[aria-pressed="true"]>.pick-badge,[aria-pressed="true"] .pick-badge{display:flex}
+
+/* barra de receta */
+.pickbar{position:sticky;bottom:0;z-index:30;margin:32px -20px 0;padding:13px 20px 15px;
+  background:var(--surface);border-top:1px solid var(--border-strong);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  box-shadow:0 -10px 30px -18px rgba(0,0,0,.4)}
+.pickbar__t{font-family:var(--ui-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-45);
+  width:100%}
+.pk{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid var(--border);border-radius:20px;
+  padding:4px 11px;color:var(--text-70);background:var(--bg)}
+.pk b{color:var(--text);font-weight:600}
+.pk.empty{border-style:dashed;color:var(--text-45)}
+.pickbar__sp{flex:1}
+.rbtn{font-family:var(--ui-body);font-weight:600;font-size:13px;padding:9px 17px;border-radius:9px;border:1px solid var(--accent);
+  background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.rbtn.ghost{background:transparent;color:var(--text-70);border-color:var(--border-strong)}
+#recipeOut{width:100%;min-height:150px;margin-top:6px;font-family:var(--ui-mono);font-size:11.5px;
+  background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px;color:var(--text-70);
+  white-space:pre;overflow:auto}
+
 /* reference lists */
 .refgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
 .ref{border:1px solid var(--border);border-radius:14px;padding:18px 20px 20px;background:var(--surface)}
@@ -409,24 +442,27 @@ section>.lead{color:var(--text-70);font-size:14px;margin:0 0 20px;max-width:70ch
     <header><h2>Movimiento</h2><span class="mono">3 niveles · 8 efectos en vivo</span></header>
     <p class="lead">El anfitrión elige cuánto se mueve su guía. Los tres niveles usan los mismos efectos base: cambia cuántos se activan.</p>
     <div class="levels">
-      <div class="lvl">
+      <button class="lvl" type="button" aria-pressed="false" data-pick="mov" data-val="sobrio" data-label="Sobrio">
+        <span class="pick-badge">✓</span>
         <span class="lvl__tag">Nivel 1</span>
         <span class="lvl__n">Sobrio</span>
         <span class="lvl__d">Solo lo funcional. Es también a lo que cae la guía cuando el huésped tiene el movimiento reducido activado.</span>
         <ul><li>Cambio de pantalla por fundido (200 ms)</li><li>Respuesta al tocar</li><li>Acordeones</li><li>Cambio de resultados sin desenfoque</li></ul>
-      </div>
-      <div class="lvl">
+      </button>
+      <button class="lvl" type="button" aria-pressed="false" data-pick="mov" data-val="equilibrado" data-label="Equilibrado">
+        <span class="pick-badge">✓</span>
         <span class="lvl__tag default">Por defecto</span>
         <span class="lvl__n">Equilibrado</span>
         <span class="lvl__d">Lo del nivel sobrio, con la cascada y las confirmaciones que ayudan a entender qué pasó.</span>
         <ul><li>Todo lo anterior, con empuje lateral entre pantallas</li><li>Cascada de tiles (40 ms)</li><li>Confirmación "Copiado" con rebote</li><li>Aparición de etapas al hacer scroll</li><li>Brillo de carga del clima</li></ul>
-      </div>
-      <div class="lvl">
+      </button>
+      <button class="lvl" type="button" aria-pressed="false" data-pick="mov" data-val="expresivo" data-label="Expresivo">
+        <span class="pick-badge">✓</span>
         <span class="lvl__tag">Nivel 3</span>
         <span class="lvl__n">Expresivo</span>
         <span class="lvl__d">Para anfitriones que quieren que la portada tenga un momento. Nada de esto toca datos críticos.</span>
         <ul><li>Todo lo anterior</li><li>Firma que se dibuja sola</li><li>Paralaje en el hero</li><li>Temperatura que sube contando</li><li>Cascada más lenta (60 ms)</li></ul>
-      </div>
+      </button>
     </div>
     <div class="demos" id="demoGrid">
 
@@ -583,6 +619,19 @@ section>.lead{color:var(--text-70);font-size:14px;margin:0 0 20px;max-width:70ch
 
     </div>
   </section>
+
+  <div class="pickbar">
+    <span class="pickbar__t">Tu receta para este anfitrión</span>
+    <span class="pk empty" data-slot="tema">Tema: <b>—</b></span>
+    <span class="pk empty" data-slot="portada">Portada: <b>—</b></span>
+    <span class="pk empty" data-slot="fondo">Fondo: <b>—</b></span>
+    <span class="pk empty" data-slot="letras">Letras: <b>del tema</b></span>
+    <span class="pk empty" data-slot="mov">Movimiento: <b>—</b></span>
+    <span class="pickbar__sp"></span>
+    <button class="rbtn ghost" type="button" id="clearRecipe">Limpiar</button>
+    <button class="rbtn" type="button" id="copyRecipe">Copiar receta</button>
+    <textarea id="recipeOut" readonly hidden aria-label="Receta de diseño"></textarea>
+  </div>
 </div>
 
 <script>
@@ -726,9 +775,13 @@ const COVERS = [
 function renderCovers(){
   const g = document.getElementById("coverGallery");
   COVERS.forEach(c=>{
-    const wrap = document.createElement("div");
+    const wrap = document.createElement("button");
     wrap.className = "pv";
+    wrap.type = "button";
+    wrap.setAttribute("aria-pressed","false");
+    wrap.dataset.pick = "portada"; wrap.dataset.val = c.id; wrap.dataset.label = c.name;
     wrap.innerHTML =
+      '<span class="pick-badge">✓</span>'+
       '<div class="pv__frame" data-themed><div class="pv__scale">'+c.html+'</div></div>'+
       '<div class="pv__meta"><span class="pv__name">'+c.name+'</span><span class="pv__for">'+c.use+'</span></div>';
     g.appendChild(wrap);
@@ -763,9 +816,13 @@ const BGS = [
 function renderBackgrounds(){
   const g = document.getElementById("bgGallery");
   BGS.forEach(b=>{
-    const wrap = document.createElement("div");
+    const wrap = document.createElement("button");
     wrap.className = "bgc";
+    wrap.type = "button";
+    wrap.setAttribute("aria-pressed","false");
+    wrap.dataset.pick = "fondo"; wrap.dataset.val = b.id; wrap.dataset.label = b.n;
     wrap.innerHTML =
+      '<span class="pick-badge">✓</span>'+
       '<div class="bgc__f '+b.cls+'" data-themed>'+
         (b.id === "particulas" ? '<canvas></canvas>' : '')+
         '<span class="bgc__t">Tu guía<br>empieza aquí</span></div>'+
@@ -807,9 +864,14 @@ function startParticles(cv){
 function renderTypography(){
   const g = document.getElementById("typeGallery");
   THEMES.forEach(t=>{
-    const card = document.createElement("div");
+    const card = document.createElement("button");
     card.className = "tc";
+    card.type = "button";
+    card.setAttribute("aria-pressed","false");
+    card.dataset.pick = "letras"; card.dataset.val = t.id;
+    card.dataset.label = t.fonts.display+" + "+t.fonts.hand+" + "+t.fonts.sans;
     card.innerHTML =
+      '<span class="pick-badge">✓</span>'+
       '<div class="tc__title">Tu guía<em>empieza aquí</em></div>'+
       '<div class="tc__sign">Paula</div>'+
       '<div class="tc__body">Conéctate al WiFi apenas llegues. La clave está en la primera tarjeta, y se copia con un toque.</div>'+
@@ -879,15 +941,18 @@ function renderThemeChips(){
     const b = document.createElement("button");
     b.className = "chip";
     b.type = "button";
+    b.dataset.theme = t.id;
     b.setAttribute("aria-pressed", String(t.id === currentTheme.id));
     b.innerHTML = '<span class="chip__dots">'+
       ['bg_deep','accent','accent_2'].map(k=>'<i style="background:'+t.palette[k]+'"></i>').join('')+
       '</span>'+t.name;
     b.addEventListener("click", ()=>{
       currentTheme = t;
+      pick.tema = t.id;
       document.querySelectorAll("#themeChips .chip").forEach(c=>c.setAttribute("aria-pressed","false"));
       b.setAttribute("aria-pressed","true");
       paintAll();
+      paintPicks();
     });
     bar.appendChild(b);
   });
@@ -898,11 +963,106 @@ function paintAll(){
   PARTICLE_COLOR = currentTheme.palette.accent;
 }
 
+/* ── selección y receta ── */
+const PICK_KEY = "receta-guia-v1";
+const pick = {tema:"", portada:"", fondo:"", letras:"", mov:""};
+
+function labelFor(slot){
+  if(slot === "tema"){
+    const t = THEMES.find(t=>t.id === pick.tema);
+    return t ? t.name : "";
+  }
+  const el = document.querySelector('[data-pick="'+slot+'"][data-val="'+pick[slot]+'"]');
+  return el ? el.dataset.label : "";
+}
+
+function paintPicks(){
+  document.querySelectorAll("[data-pick]").forEach(el=>{
+    el.setAttribute("aria-pressed", String(pick[el.dataset.pick] === el.dataset.val));
+  });
+  document.querySelectorAll("[data-slot]").forEach(chip=>{
+    const slot = chip.dataset.slot;
+    const val = labelFor(slot);
+    const fallback = slot === "letras" ? "del tema" : "—";
+    chip.querySelector("b").textContent = val || fallback;
+    chip.classList.toggle("empty", !val);
+  });
+  try{ localStorage.setItem(PICK_KEY, JSON.stringify(pick)); }catch(e){}
+}
+
+document.addEventListener("click", e=>{
+  const btn = e.target.closest("[data-pick]");
+  if(!btn) return;
+  const slot = btn.dataset.pick;
+  pick[slot] = pick[slot] === btn.dataset.val ? "" : btn.dataset.val;
+  if(slot === "letras" && pick.letras){
+    const t = THEMES.find(t=>t.id === pick.letras);
+    if(t) applyTheme(btn, t);
+  }
+  paintPicks();
+});
+
+function buildRecipe(){
+  const tema = THEMES.find(t=>t.id === pick.tema);
+  const letras = THEMES.find(t=>t.id === pick.letras) || tema;
+  const L = ["RECETA DE DISEÑO — guía del huésped",""];
+  if(tema){
+    const p = tema.palette;
+    L.push("Tema: "+tema.name+" ("+tema.id+")");
+    L.push("  Paleta: bg_deep "+p.bg_deep+" · bg_mid "+p.bg_mid+" · surface "+p.surface+" · surface_2 "+p.surface_2);
+    L.push("          accent "+p.accent+" · accent_2 "+p.accent_2+" · alert "+p.alert+" · ink "+p.ink);
+  } else L.push("Tema: (sin elegir)");
+  L.push(letras
+    ? "Letras: "+letras.fonts.display+" (títulos) · "+letras.fonts.hand+" (firma) · "+letras.fonts.sans+" (texto)"
+      + (pick.letras && pick.letras !== pick.tema ? "  ← tomadas del tema "+letras.name : "")
+    : "Letras: (sin elegir)");
+  L.push("Portada: "+(labelFor("portada") || "(sin elegir)")+(pick.portada ? " ("+pick.portada+")" : ""));
+  L.push("Fondo: "+(labelFor("fondo") || "(sin elegir)"));
+  L.push("Movimiento: "+(labelFor("mov") || "(sin elegir)"));
+  return L.join("\n");
+}
+
+document.getElementById("copyRecipe").addEventListener("click", async ()=>{
+  const out = document.getElementById("recipeOut"), btn = document.getElementById("copyRecipe");
+  out.value = buildRecipe();
+  out.hidden = false;
+  try{
+    await navigator.clipboard.writeText(out.value);
+    btn.textContent = "Copiada ✓";
+  }catch(e){
+    out.focus(); out.select();
+    btn.textContent = "Selecciónala y cópiala";
+  }
+  setTimeout(()=>{ btn.textContent = "Copiar receta"; }, 2000);
+});
+
+document.getElementById("clearRecipe").addEventListener("click", ()=>{
+  Object.keys(pick).forEach(k=>pick[k] = "");
+  document.getElementById("recipeOut").hidden = true;
+  paintPicks();
+});
+
+function restorePicks(){
+  let saved;
+  try{ saved = JSON.parse(localStorage.getItem(PICK_KEY) || "null"); }catch(e){ saved = null; }
+  if(saved) Object.keys(pick).forEach(k=>{ if(saved[k]) pick[k] = saved[k]; });
+  if(pick.tema){
+    const t = THEMES.find(t=>t.id === pick.tema);
+    if(t){
+      currentTheme = t;
+      document.querySelectorAll("#themeChips .chip").forEach(c=>
+        c.setAttribute("aria-pressed", String(c.dataset.theme === t.id)));
+    }
+  }
+  paintPicks();
+}
+
 renderThemeChips();
 renderCovers();
 renderBackgrounds();
 renderTypography();
 wireDemos();
+restorePicks();
 paintAll();
 </script>
 
