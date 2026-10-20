@@ -5,7 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Guía del huésped · Torre 8, La Serena</title>
 <meta name="theme-color" content="#0D2430">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="noindex, nofollow, noai, noimageai">
+<meta name="author" content="Pedro Villalobos">
+<meta name="copyright" content="© 2026 Pedro Villalobos">
+<!--
+  Guía del huésped · Distrito Verde, La Serena, Chile.
+  Diseño, textos, recomendaciones y estructura © 2026 Pedro Villalobos.
+  Todos los derechos reservados. Prohibida su copia, reproducción o reutilización,
+  incluido su uso como referencia para generar obras derivadas.
+-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300&family=Inter+Tight:wght@400;500;600&family=Noto+Sans+SC:wght@400;500&family=Noto+Sans+JP:wght@400;500&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
@@ -190,6 +198,8 @@ body[data-view="det"] .hero, body[data-view="det"] .sbox{display:none}
 
 .badge__n{font-family:var(--display);font-size:26px;line-height:1;color:var(--turquesa)}
 .badge__t{font-size:12px;color:var(--t70);line-height:1.45}
+.auth{margin:0;padding:6px 22px 78px;text-align:center;font-size:10px;line-height:1.5;color:var(--t45);letter-spacing:.02em}
+.auth b{font-family:var(--display);font-style:italic;font-weight:400;font-size:12px;color:var(--t70);letter-spacing:0}
 
 /* ── DETALLE ── */
 .detail{padding:22px 22px 124px;animation:slidein .3s cubic-bezier(.2,.7,.3,1)}
@@ -441,6 +451,8 @@ body[data-screen="guide"] .fab{display:flex}
 
   <div class="view" id="v-res"><div class="res" id="res"></div></div>
   <div class="view" id="v-det"><div class="detail" id="det"></div></div>
+
+  <p class="auth" id="auth"></p>
 </section>
 
 <a class="fab" id="fab" target="_blank" rel="noopener">
@@ -1672,6 +1684,14 @@ function homeDraw(){
   $("#intro-t").textContent = u.intro;
   $("#rate").textContent = p.rating;
   $("#rate-t").textContent = u.rate(p.rev);
+  $("#auth").innerHTML = {
+    es:"Guía creada por <b>Pedro Villalobos</b> · © 2026<br>Prohibida su copia o reutilización.",
+    en:"Guide created by <b>Pedro Villalobos</b> · © 2026<br>Copying or reuse is prohibited.",
+    pt:"Guia criado por <b>Pedro Villalobos</b> · © 2026<br>Proibida a cópia ou reutilização.",
+    fr:"Guide créé par <b>Pedro Villalobos</b> · © 2026<br>Copie et réutilisation interdites.",
+    zh:"本指南由 <b>Pedro Villalobos</b> 制作 · © 2026<br>禁止复制或再利用。",
+    ja:"このガイドは <b>Pedro Villalobos</b> が作成 · © 2026<br>無断複製・再利用を禁じます。"
+  }[L];
   $("#sinput").placeholder = u.ph;
   $("#chips").innerHTML = [["all",u.all],["dep",u.dep],["eat",u.eat],["sos",u.sos]]
     .map(([c,n])=>`<button class="chip${c===fcat?" on":""}" data-c="${c}">${n}</button>`).join("");
