@@ -314,7 +314,8 @@ body[data-view="det"] .hero, body[data-view="det"] .sbox{display:none}
 .lightbox{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;
   flex-direction:column;background:rgba(13,20,23,.94);padding:24px;backdrop-filter:blur(4px)}
 .lightbox.on{display:flex}
-.lightbox img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:10px;
+.lightbox video{display:none;background:#000}
+.lightbox img,.lightbox video{max-width:100%;max-height:78vh;object-fit:contain;border-radius:10px;
   box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .lightbox__cap{color:var(--l60);font-size:13px;margin:14px 0 0;text-align:center}
 .lightbox__x{position:absolute;top:18px;right:18px;background:rgba(248,243,233,.12);border:none;
@@ -465,6 +466,7 @@ body[data-screen="guide"] .fab{display:flex}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
   <img id="lbImg" src="" alt="">
+  <video id="lbVid" muted loop playsinline preload="none"></video>
   <p class="lightbox__cap" id="lbCap"></p>
 </div>
 </div>
@@ -497,7 +499,7 @@ const FOTO = {
 
 const P = {
   "138": { n:"Depto 138", piso:1, est:"249", wifi:"GTDDPTO138", clave:"d138torre8",
-    airbnb:"https://www.airbnb.cl/rooms/1306576472575648477", rating:"4,99", rev:194,
+    airbnb:"https://www.airbnb.cl/rooms/1306576472575648477", rating:"4,99", rev:195,
     host:"1306576472575648477",
     fotos:["d181f549-bc4b-4861-a5b0-46bef95f356e","024c0231-4fbb-4a1b-9ed9-4a4aeac525cf",
            "9344c530-db57-4366-9dad-5c25f012875f","3f194206-e3e0-41e4-bcd4-d595a4e19ce6",
@@ -734,7 +736,7 @@ S.es = {
     st:p=>[`Entra al condominio por la portería. <b>Funciona 24/7</b>, así que no hay problema si llegas tarde.`,
       `Estaciona en el sitio <b>N° ${p.est}</b>, dentro del condominio.`,
       `Busca la <b>Torre 8</b>: está <b>al final del condominio</b>, frente a los quinchos.`,
-      `La puerta del edificio tiene un <b>sensor de proximidad</b>: acerca la mano al sensor y se abre.`,
+      `Para <b>entrar</b> a la torre, acerca el <b>llavero tag azul</b> al lector. Si no lo tienes, aprieta el <b>citófono</b> y desde portería te abren. Para <b>salir</b>, solo pon la mano en el <b>sensor</b>.`,
       `Sube al <b>piso ${p.piso}</b>, ${p.n.toLowerCase().replace("depto","departamento")}.`,
       `Abre con la <b>cerradura digital</b>. El código te lo envío por Airbnb o WhatsApp antes de tu llegada.`],
     h2:"Horarios",r:[["Check-in","desde 14:00"],["Check-out","hasta 10:00"],["Portería","24/7"]],
@@ -848,7 +850,7 @@ S.en = {
     st:p=>[`Enter the complex through reception. It's <b>staffed 24/7</b>, so a late arrival is no problem.`,
       `Park in space <b>No. ${p.est}</b>, inside the complex.`,
       `Look for <b>Tower 8</b>: it's <b>at the far end of the complex</b>, facing the BBQ area.`,
-      `The building door has a <b>proximity sensor</b>: hold your hand up to the sensor and it opens.`,
+      `To <b>get in</b>, hold the <b>blue tag keychain</b> up to the reader. Don't have it? Press the <b>intercom</b> and reception will open the door. To <b>leave</b>, just place your hand on the <b>sensor</b>.`,
       `Go up to <b>floor ${p.piso}</b>, apartment ${p.n.replace("Depto ","")}.`,
       `Open with the <b>digital lock</b>. I'll send you the code through Airbnb or WhatsApp before you arrive.`],
     h2:"Times",r:[["Check-in","from 2:00 PM"],["Check-out","by 10:00 AM"],["Reception","24/7"]],
@@ -954,7 +956,7 @@ S.pt = {
     st:p=>[`Entre no condomínio pela portaria. <b>Funciona 24 h</b>, então não há problema se chegar tarde.`,
       `Estacione na vaga <b>N° ${p.est}</b>, dentro do condomínio.`,
       `Procure a <b>Torre 8</b>: fica <b>no fundo do condomínio</b>, de frente para a churrasqueira.`,
-      `A porta do prédio tem um <b>sensor de proximidade</b>: aproxime a mão do sensor e ela abre.`,
+      `Para <b>entrar</b> na torre, aproxime o <b>chaveiro tag azul</b> do leitor. Se não tiver, aperte o <b>interfone</b> e a portaria abre. Para <b>sair</b>, basta colocar a mão no <b>sensor</b>.`,
       `Suba ao <b>andar ${p.piso}</b>, apartamento ${p.n.replace("Depto ","")}.`,
       `Abra com a <b>fechadura digital</b>. Envio o código pelo Airbnb ou WhatsApp antes da sua chegada.`],
     h2:"Horários",r:[["Check-in","a partir das 14:00"],["Check-out","até as 10:00"],["Portaria","24 h"]],
@@ -1061,7 +1063,7 @@ S.fr = {
     st:p=>[`Entrez dans la résidence par la réception. Elle est <b>ouverte 24h/24</b>, aucun souci si vous arrivez tard.`,
       `Garez-vous à la place <b>n° ${p.est}</b>, à l'intérieur de la résidence.`,
       `Cherchez la <b>Tour 8</b> : elle est <b>au fond de la copropriété</b>, face aux barbecues.`,
-      `La porte de l'immeuble a un <b>capteur de proximité</b> : approchez la main du capteur et elle s'ouvre.`,
+      `Pour <b>entrer</b> dans la tour, approchez le <b>porte-clés tag bleu</b> du lecteur. Sans lui, appuyez sur l'<b>interphone</b> et la réception ouvrira. Pour <b>sortir</b>, posez simplement la main sur le <b>capteur</b>.`,
       `Montez à l'<b>étage ${p.piso}</b>, appartement ${p.n.replace("Depto ","")}.`,
       `Ouvrez avec la <b>serrure numérique</b>. Je vous envoie le code par Airbnb ou WhatsApp avant votre arrivée.`],
     h2:"Horaires",r:[["Arrivée","à partir de 14h00"],["Départ","avant 10h00"],["Réception","24h/24"]],
@@ -1168,7 +1170,7 @@ S.zh = {
     st:p=>[`从门卫处进入小区。门卫<b>24 小时值守</b>，深夜到达也没问题。`,
       `把车停在小区内 <b>${p.est} 号</b>车位。`,
       `找 <b>8 号楼</b>：位于<b>小区最里面</b>，就在烧烤区对面。`,
-      `楼门装有<b>感应传感器</b>：把手靠近感应器，门就会打开。`,
+      `<b>进入</b>大楼：把<b>蓝色标签钥匙扣</b>靠近读卡器。若没有，请按<b>对讲机</b>，门卫会为您开门。<b>离开</b>时，只需把手放在<b>感应器</b>上。`,
       `上 <b>${p.piso} 层</b>，${p.n.replace("Depto ","")} 号房。`,
       `用<b>电子门锁</b>开门。密码会在您到达前通过 Airbnb 或 WhatsApp 发送。`],
     h2:"时间",r:[["入住","14:00 起"],["退房","10:00 前"],["门卫","24 小时"]],
@@ -1274,7 +1276,7 @@ S.ja = {
     st:p=>[`管理人室を通ってマンションに入ります。<b>24時間対応</b>ですので、深夜のご到着でも問題ありません。`,
       `敷地内の <b>${p.est} 番</b>の駐車スペースをご利用ください。`,
       `<b>8号棟</b>は<b>敷地の一番奥</b>、BBQエリアの正面です。`,
-      `建物の入口は<b>近接センサー</b>式です。センサーに手を近づけると開きます。`,
+      `タワーに<b>入る</b>には、<b>青いタグのキーホルダー</b>をリーダーにかざします。お持ちでない場合は<b>インターホン</b>を押すと、管理人室が開けてくれます。<b>出る</b>ときは、<b>センサー</b>に手を置くだけです。`,
       `<b>${p.piso}階</b>、${p.n.replace("Depto ","")}号室です。`,
       `<b>デジタルロック</b>で解錠します。暗証番号はご到着前に Airbnb または WhatsApp でお送りします。`],
     h2:"時間",r:[["チェックイン","14:00 以降"],["チェックアウト","10:00 まで"],["管理人室","24時間"]],
@@ -1370,7 +1372,7 @@ S.ja = {
 
 /* ═══════ ÍNDICE DE BÚSQUEDA ═══════ */
 const FAQ = [
-  { k:"est", sec:"llegada", cat:"dep", foto:p=>FOTO["estacionamiento_"+p.id],
+  { k:"est", sec:"llegada", cat:"dep", foto:p=>[FOTO["estacionamiento_"+p.id], "video/estacionamiento-"+p.id+".mp4"],
     q:{es:"¿Dónde está mi estacionamiento?",en:"Where is my parking space?",pt:"Onde fica minha vaga?",fr:"Où est ma place de parking ?",zh:"我的车位在哪里？",ja:"駐車スペースはどこですか？"},
     a:{es:p=>`Tu estacionamiento es el <b>N° ${p.est}</b>, dentro del condominio. Entra por la portería y el guardia te indica.`,
        en:p=>`Your space is <b>No. ${p.est}</b>, inside the complex. Enter through reception and the guard will point you to it.`,
@@ -1388,14 +1390,14 @@ const FAQ = [
        zh:p=>`网络 <b>${p.wifi}</b>，密码 <b>${p.clave}</b>。点击下方可一键复制。`,
        ja:p=>`ネットワーク <b>${p.wifi}</b>、パスワード <b>${p.clave}</b>。下をタップするとコピーできます。`},
     kw:{es:"internet red contraseña clave conexion",en:"internet network password connect",pt:"internet rede senha conexao",fr:"internet reseau mot de passe",zh:"网络 上网 无线",ja:"インターネット 無線 接続"} },
-  { k:"puerta", sec:"llegada", cat:"dep", foto:p=>FOTO["cerradura_"+p.id],
+  { k:"puerta", sec:"llegada", cat:"dep", foto:p=>[FOTO["cerradura_"+p.id], "video/entrar-torre.mp4", "video/salir-torre.mp4"],
     q:{es:"¿Cómo abro la puerta?",en:"How do I open the door?",pt:"Como abro a porta?",fr:"Comment ouvrir la porte ?",zh:"怎么开门？",ja:"どうやって解錠しますか？"},
-    a:{es:()=>`Primero, la <b>puerta del edificio</b> funciona con sensor de proximidad: acerca la mano al sensor y se abre. Luego, en el departamento, la cerradura es digital, con teclado: <b>el código te lo envío por Airbnb o WhatsApp</b> antes de tu llegada. Si no lo encuentras, escríbeme y te lo reenvío al momento.`,
-       en:()=>`First, the <b>building door</b> has a proximity sensor: hold your hand up to it and it opens. Then, at the apartment, the lock is digital with a keypad: <b>I send the code by Airbnb or WhatsApp</b> before you arrive. Can't find it? Message me and I'll resend it right away.`,
-       pt:()=>`Primeiro, a <b>porta do prédio</b> tem sensor de proximidade: aproxime a mão e ela abre. Depois, no apartamento, a fechadura é digital, com teclado: <b>envio o código pelo Airbnb ou WhatsApp</b> antes da sua chegada. Não encontrou? Me escreva e reenvio na hora.`,
-       fr:()=>`D'abord, la <b>porte de l'immeuble</b> a un capteur de proximité : approchez la main et elle s'ouvre. Ensuite, à l'appartement, la serrure est numérique, à clavier : <b>je vous envoie le code par Airbnb ou WhatsApp</b> avant votre arrivée. Introuvable ? Écrivez-moi, je le renvoie tout de suite.`,
-       zh:()=>`首先，<b>楼门</b>有感应传感器：把手靠近即可开门。然后在房间，门锁是带键盘的电子锁：<b>密码会在您到达前通过 Airbnb 消息发送</b>。找不到的话请联系我，我会立刻重发。`,
-       ja:()=>`まず<b>建物の入口</b>は近接センサー式で、手を近づけると開きます。次に客室では、鍵はテンキー式のデジタルロックです：<b>暗証番号はご到着前に Airbnb のメッセージでお送りします。</b>見つからない場合はご連絡ください。すぐに再送します。`},
+    a:{es:()=>`Primero, la <b>puerta del edificio</b>: para entrar usa el <b>llavero tag azul</b> en el lector (si no lo tienes, aprieta el <b>citófono</b> y portería te abre); para salir, solo pon la mano en el sensor. Luego, en el departamento, la cerradura es digital, con teclado: <b>el código te lo envío por Airbnb o WhatsApp</b> antes de tu llegada. Si no lo encuentras, escríbeme y te lo reenvío al momento.`,
+       en:()=>`First, the <b>building door</b>: to get in, use the <b>blue tag keychain</b> on the reader (no tag? press the <b>intercom</b> and reception will let you in); to leave, just place your hand on the sensor. Then, at the apartment, the lock is digital with a keypad: <b>I send the code by Airbnb or WhatsApp</b> before you arrive. Can't find it? Message me and I'll resend it right away.`,
+       pt:()=>`Primeiro, a <b>porta do prédio</b>: para entrar, use o <b>chaveiro tag azul</b> no leitor (sem ele, aperte o <b>interfone</b> e a portaria abre); para sair, basta colocar a mão no sensor. Depois, no apartamento, a fechadura é digital, com teclado: <b>envio o código pelo Airbnb ou WhatsApp</b> antes da sua chegada. Não encontrou? Me escreva e reenvio na hora.`,
+       fr:()=>`D'abord, la <b>porte de l'immeuble</b> : pour entrer, utilisez le <b>porte-clés tag bleu</b> sur le lecteur (sans lui, appuyez sur l'<b>interphone</b> et la réception ouvre) ; pour sortir, posez simplement la main sur le capteur. Ensuite, à l'appartement, la serrure est numérique, à clavier : <b>je vous envoie le code par Airbnb ou WhatsApp</b> avant votre arrivée. Introuvable ? Écrivez-moi, je le renvoie tout de suite.`,
+       zh:()=>`首先是<b>楼门</b>：进入时用<b>蓝色标签钥匙扣</b>刷读卡器（没有的话，按<b>对讲机</b>，门卫会开门）；离开时只需把手放在感应器上。然后在房间，门锁是带键盘的电子锁：<b>密码会在您到达前通过 Airbnb 消息发送</b>。找不到的话请联系我，我会立刻重发。`,
+       ja:()=>`まず<b>建物の入口</b>：入るときは<b>青いタグのキーホルダー</b>をリーダーにかざします（お持ちでない場合は<b>インターホン</b>を押すと管理人室が開けます）。出るときはセンサーに手を置くだけです。次に客室では、鍵はテンキー式のデジタルロックです：<b>暗証番号はご到着前に Airbnb のメッセージでお送りします。</b>見つからない場合はご連絡ください。すぐに再送します。`},
     kw:{es:"llave clave codigo cerradura entrar acceso",en:"key code lock enter access",pt:"chave codigo fechadura entrar",fr:"cle code serrure entrer acces",zh:"钥匙 密码 门锁 进门",ja:"鍵 暗証番号 ロック 入室"} },
   { k:"cin", sec:"llegada", cat:"dep",
     q:{es:"¿A qué hora es el check-in?",en:"What time is check-in?",pt:"Que horas é o check-in?",fr:"À quelle heure l'arrivée ?",zh:"几点可以入住？",ja:"チェックインは何時ですか？"},
@@ -1872,9 +1874,10 @@ function search(q){
   PBUF = [];
   $("#res").innerHTML = hits.length ? `<p class="res__c">${u.found(hits.length)}</p>` + hits.map(f=>{
     const ph = f.foto ? f.foto(p) : null;
-    const phs = Array.isArray(ph) ? ph.filter(Boolean) : (ph ? [ph] : []);
+    const phs = Array.isArray(ph) ? ph : (ph ? [ph] : []);
     const caps = FAQ_CAPS[f.k] || [];
-    const media = f.foto ? (phs.length ? pchips(phs.map((s,i)=>[s, caps[i]||"torre8"])) : `<div class="ph">${u.pend}</div>`) : "";
+    const prs = phs.map((s,i)=>[s, caps[i]||"torre8"]).filter(([s])=>s);
+    const media = f.foto ? (prs.length ? pchips(prs) : `<div class="ph">${u.pend}</div>`) : "";
     return `<div class="qa" data-k="${f.k}">
       <button class="qa__q"><span>${f.q[L]}</span>
         <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -1901,35 +1904,38 @@ const placesT = a => a.filter(p=>pcat==="all"||p[0]===pcat)
 
 /* ── FOTOS SELECCIONABLES (ventana / lightbox) ── */
 const CAP = {
-  es:{torre8:"Torre 8",cerradura:"Cerradura de acceso",ducto:"Ducto de basura",puertaRes:"Puerta de residuos",
+  es:{torre8:"Torre 8",cerradura:"Cerradura de acceso",ducto:"Ducto de basura",puertaRes:"Puerta de residuos",videoRes:"Sala de residuos (video)",videoEntrar:"Entrar a la torre (con llave)",videoSalir:"Salir de la torre",videoTorre:"Torre 8 desde afuera (video)",videoEst:"Estacionamiento (video)",
       piscina1:"Piscina principal",piscina2:"Piscina infantil",quinchos:"Quinchos",
       lavanderia1:"Lavandería (interior)",lavanderia2:"Lavandería (edificio)",porteria:"Portería",estacionamiento:"Estacionamiento"},
-  en:{torre8:"Tower 8",cerradura:"Door lock",ducto:"Waste chute",puertaRes:"Waste room door",
+  en:{torre8:"Tower 8",cerradura:"Door lock",ducto:"Waste chute",puertaRes:"Waste room door",videoRes:"Waste room (video)",videoEntrar:"Entering the tower (with key)",videoSalir:"Leaving the tower",videoTorre:"Tower 8 from outside (video)",videoEst:"Parking (video)",
       piscina1:"Main pool",piscina2:"Kids' pool",quinchos:"BBQ area",
       lavanderia1:"Laundry room (inside)",lavanderia2:"Laundry room (building)",porteria:"Reception",estacionamiento:"Parking"},
-  pt:{torre8:"Torre 8",cerradura:"Fechadura de acesso",ducto:"Duto de lixo",puertaRes:"Porta da sala de resíduos",
+  pt:{torre8:"Torre 8",cerradura:"Fechadura de acesso",ducto:"Duto de lixo",puertaRes:"Porta da sala de resíduos",videoRes:"Sala de resíduos (vídeo)",videoEntrar:"Entrar na torre (com chave)",videoSalir:"Sair da torre",videoTorre:"Torre 8 vista de fora (vídeo)",videoEst:"Estacionamento (vídeo)",
       piscina1:"Piscina principal",piscina2:"Piscina infantil",quinchos:"Churrasqueiras",
       lavanderia1:"Lavanderia (interior)",lavanderia2:"Lavanderia (prédio)",porteria:"Portaria",estacionamiento:"Estacionamento"},
-  fr:{torre8:"Tour 8",cerradura:"Serrure d'accès",ducto:"Vide-ordures",puertaRes:"Porte du local à déchets",
+  fr:{torre8:"Tour 8",cerradura:"Serrure d'accès",ducto:"Vide-ordures",puertaRes:"Porte du local à déchets",videoRes:"Local à déchets (vidéo)",videoEntrar:"Entrer dans la tour (avec la clé)",videoSalir:"Sortir de la tour",videoTorre:"Tour 8 vue de l'extérieur (vidéo)",videoEst:"Parking (vidéo)",
       piscina1:"Piscine principale",piscina2:"Piscine enfants",quinchos:"Zone barbecue",
       lavanderia1:"Laverie (intérieur)",lavanderia2:"Laverie (bâtiment)",porteria:"Réception",estacionamiento:"Parking"},
-  zh:{torre8:"8 号楼",cerradura:"门锁",ducto:"垃圾道",puertaRes:"垃圾房门",
+  zh:{torre8:"8 号楼",cerradura:"门锁",ducto:"垃圾道",puertaRes:"垃圾房门",videoRes:"垃圾房（视频）",videoEntrar:"进入大楼（使用钥匙）",videoSalir:"离开大楼",videoTorre:"8 号楼外观（视频）",videoEst:"停车位（视频）",
       piscina1:"主泳池",piscina2:"儿童泳池",quinchos:"烧烤区",
       lavanderia1:"洗衣房（内部）",lavanderia2:"洗衣房（外观）",porteria:"门卫室",estacionamiento:"停车位"},
-  ja:{torre8:"タワー8",cerradura:"ドアロック",ducto:"ゴミ用ダクト",puertaRes:"ゴミ置き場のドア",
+  ja:{torre8:"タワー8",cerradura:"ドアロック",ducto:"ゴミ用ダクト",puertaRes:"ゴミ置き場のドア",videoRes:"ゴミ置き場（動画）",videoEntrar:"タワーに入る（キー使用）",videoSalir:"タワーから出る",videoTorre:"タワー8の外観（動画）",videoEst:"駐車場（動画）",
       piscina1:"メインプール",piscina2:"キッズプール",quinchos:"BBQエリア",
       lavanderia1:"ランドリー（室内）",lavanderia2:"ランドリー（建物）",porteria:"管理人室",estacionamiento:"駐車場"}
 };
 /* qué etiqueta(s) mostrar según la pregunta del buscador que trae foto */
-const FAQ_CAPS = { est:["estacionamiento"], puerta:["cerradura"], tarde:["porteria"], basura:["ducto"],
+const FAQ_CAPS = { est:["estacionamiento","videoEst"], puerta:["cerradura","videoEntrar","videoSalir"], tarde:["porteria"], basura:["ducto"],
   piscina:["piscina1","piscina2","quinchos"], lavanderia:["lavanderia1","lavanderia2"] };
 let PBUF = [];
 function pchip(src, capKey){
   if(!src) return "";
   const cap = CAP[L][capKey] || capKey;
   const i = PBUF.push([src, cap]) - 1;
+  const ico = /\.mp4$/i.test(src)
+    ? `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.2"/><path d="M10 9.5v5l4.2-2.5z"/></svg>`
+    : `<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="13" rx="2.2"/><circle cx="12" cy="13" r="3"/><path d="M8.5 6.5l1.3-2h4.4l1.3 2"/></svg>`;
   return `<button class="pchip" data-pi="${i}">
-    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="13" rx="2.2"/><circle cx="12" cy="13" r="3"/><path d="M8.5 6.5l1.3-2h4.4l1.3 2"/></svg>
+    ${ico}
     ${cap}</button>`;
 }
 function pchips(pairs){ // [[src,capKey], ...]
@@ -1942,10 +1948,16 @@ function bindPchips(container){
   }));
 }
 function openPhoto(src,cap){
-  $("#lbImg").src = src; $("#lbCap").textContent = cap||"";
+  const isVid = /\.mp4$/i.test(src), v = $("#lbVid"), im = $("#lbImg");
+  im.style.display = isVid ? "none" : ""; v.style.display = isVid ? "block" : "none";
+  if(isVid){ v.src = src; v.play().catch(()=>{}); } else { im.src = src; }
+  $("#lbCap").textContent = cap||"";
   $("#lightbox").classList.add("on");
 }
-function closePhoto(){ $("#lightbox").classList.remove("on"); $("#lbImg").src=""; }
+function closePhoto(){
+  $("#lightbox").classList.remove("on"); $("#lbImg").src="";
+  const v=$("#lbVid"); v.pause(); v.removeAttribute("src"); v.load();
+}
 $("#lbClose").addEventListener("click", closePhoto);
 $("#lightbox").addEventListener("click", e=>{ if(e.target.id==="lightbox") closePhoto(); });
 window.addEventListener("keydown", e=>{ if(e.key==="Escape") closePhoto(); });
@@ -2079,7 +2091,7 @@ function detail(k){
       ${S[L].antes.b2}</a>
       <p class="tip">📍 ${DIR}</p>`;
     H += `<h3>${d.h1}</h3>${stepT(d.st(p))}`;
-    if(FOTO.torre8) H += pchips([[FOTO.torre8,"torre8"]]);
+    H += pchips([["video/estacionamiento-"+p.id+".mp4","videoEst"], ...(FOTO.torre8?[[FOTO.torre8,"torre8"]]:[]), ["video/torre-8.mp4","videoTorre"], ["video/entrar-torre.mp4","videoEntrar"], ["video/salir-torre.mp4","videoSalir"]]);
     H += `<h3>${d.h2}</h3>${rowsT(d.r)}<p class="tip">${d.n}</p>`;
   }
 
@@ -2147,7 +2159,10 @@ function detail(k){
     const li1 = `<li><span class="stxt">${d.st[0]}</span></li>`;
     const rest = d.st.slice(1).map(s=>`<li><span class="stxt">${s}</span></li>`).join("");
     H += `<ol class="steps">${li1}</ol>`;
-    if(bfotos.length) H += pchips(bfotos.map((s,i)=>[s, i===0?"ducto":"puertaRes"]));
+    const bpairs = bfotos.map((s,i)=>[s, i===0?"ducto":"puertaRes"]);
+    if(["138","536"].includes(p.id)) bpairs.push(["video/sala-residuos-"+p.id+".mp4","videoRes"]);
+    bpairs.push(["video/salir-torre.mp4","videoSalir"]); // video de la sala de residuos de cada depto
+    if(bpairs.length) H += pchips(bpairs);
     H += `<ol class="steps" style="counter-reset:s 1">${rest}</ol>`;
     H += `<p class="tip">${d.n}</p><h3>${d.h2}</h3><p>${d.p2}</p>
       <a class="btn" href="${p.airbnb}" target="_blank" rel="noopener">${d.b}</a>`;
