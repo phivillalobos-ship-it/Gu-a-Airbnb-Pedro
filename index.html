@@ -465,7 +465,7 @@ body[data-screen="guide"] .fab{display:flex}
   <button class="lightbox__x" id="lbClose" aria-label="Cerrar">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
-  <img id="lbImg" src="" alt="">
+  <img id="lbImg" alt="">
   <video id="lbVid" muted loop playsinline preload="none"></video>
   <p class="lightbox__cap" id="lbCap"></p>
 </div>
@@ -1955,7 +1955,7 @@ function openPhoto(src,cap){
   $("#lightbox").classList.add("on");
 }
 function closePhoto(){
-  $("#lightbox").classList.remove("on"); $("#lbImg").src="";
+  $("#lightbox").classList.remove("on"); $("#lbImg").removeAttribute("src");
   const v=$("#lbVid"); v.pause(); v.removeAttribute("src"); v.load();
 }
 $("#lbClose").addEventListener("click", closePhoto);
